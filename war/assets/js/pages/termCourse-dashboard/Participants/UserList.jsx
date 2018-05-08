@@ -31,14 +31,14 @@ export default class UserList extends React.Component {
 
 	addOwners() {
 		var _this = this;
-		CourseEndpoint.listTermCourseParticipants(
-			this.props.termCourse.id
-		).then(function(resp) {
-			resp.items = resp.items || [];
-			_this.setState({
-				users: resp.items
-			});
-		});
+		CourseEndpoint.listTermCourseParticipants(this.props.termCourse.id).then(
+			function(resp) {
+				resp.items = resp.items || [];
+				_this.setState({
+					users: resp.items
+				});
+			}
+		);
 	}
 
 	renderUser(user, index) {

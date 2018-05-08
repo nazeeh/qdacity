@@ -12,11 +12,15 @@ export default class Promisizer {
 					resolve(resp);
 				} else {
 					const method = Promisizer.getMethod(apiMethod);
-					if (resp.code === -1 && (method === "POST" || method === "DELETE" || method === "PUT")){
+					if (
+						resp.code === -1 &&
+						(method === 'POST' || method === 'DELETE' || method === 'PUT')
+					) {
 						const { formatMessage } = IntlProvider.intl;
 						const alertMessage = formatMessage({
 							id: 'modal.offline_unsupported',
-							defaultMessage: 'Operation currently not supported in offline mode'
+							defaultMessage:
+								'Operation currently not supported in offline mode'
 						});
 						new Alert(alertMessage).showModal();
 					}

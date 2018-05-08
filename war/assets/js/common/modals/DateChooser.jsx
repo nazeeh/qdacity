@@ -39,9 +39,7 @@ export default class DateChooser extends React.Component {
 		);
 	}
 
-
 	render() {
-
 		const CenteringDiv = styled.div`
 			display: flex;
 		`;
@@ -62,21 +60,15 @@ export default class DateChooser extends React.Component {
 
 		return (
 			<CenteringDiv>
-					<div>
-						<CustomStyledInput
-							type={'date'}
-							required={'required'}
-							value={DateChooser.toDateString(
-								this.state.customDate
-							)}
-							onChange={event =>
-								this.setcustomDate(new Date(event.target.value))
-							}
-							min={DateChooser.toDateString(
-								dateMinDefault
-							)}
-						/>
-					</div>
+				<div>
+					<CustomStyledInput
+						type={'date'}
+						required={'required'}
+						value={DateChooser.toDateString(this.state.customDate)}
+						onChange={event => this.setcustomDate(new Date(event.target.value))}
+						min={DateChooser.toDateString(dateMinDefault)}
+					/>
+				</div>
 			</CenteringDiv>
 		);
 	}

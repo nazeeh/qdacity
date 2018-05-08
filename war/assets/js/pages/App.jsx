@@ -8,7 +8,7 @@ import {
 
 import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
-import VexModal from '../common/modals/VexModal.js'
+import VexModal from '../common/modals/VexModal.js';
 
 import AuthenticationProvider from '../common/auth/AuthenticationProvider.js';
 import AuthorizationProvider from '../common/auth/AuthorizationProvider.js';
@@ -37,7 +37,6 @@ import SettingsPage from './settings/Settings.jsx';
 
 // React-Intl
 import IntlProvider from '../common/Localization/LocalizationProvider';
-
 
 const ContentGrid = styled.div`
 	display: grid;
@@ -133,7 +132,6 @@ export default class App extends React.Component {
 	}
 
 	async initAuthProvider() {
-		
 		let _this = this;
 		this.authenticationProvider.addAuthStateListener(function() {
 			// update on every auth state change
@@ -148,8 +146,8 @@ export default class App extends React.Component {
 			} catch (e) {
 				// ok, if failed
 			}
-			
-			if(!this.authenticationProvider.isSignedIn()) {
+
+			if (!this.authenticationProvider.isSignedIn()) {
 				// try silent sign in
 				try {
 					await this.authenticationProvider.silentSignInWithGoogle();
@@ -157,7 +155,6 @@ export default class App extends React.Component {
 					// ok if failed
 				}
 			}
-
 		}
 		this.updateUserStatus(); // somehow the auth state listener triggers too early!
 	}
@@ -177,13 +174,14 @@ export default class App extends React.Component {
 				return;
 			}
 
-			_this.authenticationProvider.synchronizeTokenWithGapi() // Bugfix: sometimes the token seems to get lost!
-				.catch((e) => {
+			_this.authenticationProvider
+				.synchronizeTokenWithGapi() // Bugfix: sometimes the token seems to get lost!
+				.catch(e => {
 					console.log('Failure at syncing token with gapi.');
 					console.log(e);
-				})
+				});
 
-			// 2. get the user profile			
+			// 2. get the user profile
 			let profile = {
 				name: '',
 				firstname: '',
@@ -196,10 +194,10 @@ export default class App extends React.Component {
 				externalEmail: ''
 			};
 			let picSrcWithoutParams = '';
-			if(!!loginStatus) {
+			if (loginStatus) {
 				profile = await _this.authenticationProvider.getProfile();
 			}
-			
+
 			_this.state.auth.userProfile = {
 				qdacityId: profile.qdacityId,
 				authNetwork: profile.authNetwork,
@@ -216,11 +214,12 @@ export default class App extends React.Component {
 			let user = undefined;
 			try {
 				user = await _this.authenticationProvider.getCurrentUser();
-				if(!! user.profileImg) {
+				if (user.profileImg) {
 					console.log('received stored profile image');
-					_this.state.auth.userProfile.picSrc = 'data://image/png;base64,' + user.profileImg;
+					_this.state.auth.userProfile.picSrc =
+						'data://image/png;base64,' + user.profileImg;
 				}
-			} catch(e) {
+			} catch (e) {
 				// user stays undefined
 			}
 			_this.state.auth.authState = {
@@ -237,12 +236,12 @@ export default class App extends React.Component {
 	}
 
 	async updateConnectionStatus() {
-		fetch('/ping.txt', {cache: "no-store"})
-			.then((response) => {
-				this.setApiConnectionState(response.status === 200)
+		fetch('/ping.txt', { cache: 'no-store' })
+			.then(response => {
+				this.setApiConnectionState(response.status === 200);
 			})
-			.catch((error) => {
-				this.setApiConnectionState(false)
+			.catch(error => {
+				this.setApiConnectionState(false);
 			});
 	}
 
@@ -252,11 +251,9 @@ export default class App extends React.Component {
 				api: state,
 				rtcs: this.state.connected.rtcs
 			};
-			this.setState(
-				{
-					connected: connected
-				}
-			);
+			this.setState({
+				connected: connected
+			});
 		}
 	}
 
@@ -266,11 +263,9 @@ export default class App extends React.Component {
 				api: this.state.connected.api,
 				rtcs: state
 			};
-			this.setState(
-				{
-					connected: connected
-				}
-			);
+			this.setState({
+				connected: connected
+			});
 		}
 	}
 
@@ -316,7 +311,9 @@ export default class App extends React.Component {
 										client_id={this.props.apiCfg.client_id}
 										scopes={this.props.apiCfg.scopes}
 										auth={this.state.auth}
-										connected={this.state.connected.api && this.state.connected.rtcs}
+										connected={
+											this.state.connected.api && this.state.connected.rtcs
+										}
 										tutorial={tut}
 										theme={Theme}
 										{...props}
@@ -449,7 +446,9 @@ export default class App extends React.Component {
 												locale={this.state.locale}
 												language={this.state.language}
 												messages={this.state.messages}
-												auth={this.state.auth} {...props} />
+												auth={this.state.auth}
+												{...props}
+											/>
 										)}
 									/>
 								</ContentMain>

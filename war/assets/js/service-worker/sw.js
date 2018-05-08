@@ -1,4 +1,6 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
+importScripts(
+	'https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js'
+);
 
 import { listProjectHandler, listValidationProjectHandler, getProjectHandler } from "./handlers/ProjectHandler";
 import { getCodeSystemHandler } from "./handlers/CodeSystemHandler";
@@ -31,21 +33,21 @@ workbox.core.setCacheNameDetails({
 
 function discoverApi() {
 	return fetch('_ah/api/discovery/v1/apis/qdacity/$API_VERSION$/rest')
-		.then(function (response) {
+		.then(function(response) {
 			if (response.ok) {
 				return response.json();
 			}
 		})
-		.then(function (response) {
+		.then(function(response) {
 			return _parseDiscoveryDoc(response);
 		})
-		.catch(function (error) {
-			console.log("error discovery ", error)
+		.catch(function(error) {
+			console.log('error discovery ', error);
 		});
 }
 
 function _parseDiscoveryDoc(discovery) {
-	console.log("parsing discovery...");
+	console.log('parsing discovery');
 	const resources = discovery.resources;
 	for (let resource in resources) {
 		resource = resources[resource];
@@ -64,9 +66,7 @@ function _parseDiscoveryDoc(discovery) {
  * @returns {RegExp}
  */
 function pathToRegex(path) {
-	const regex = new RegExp(path.replace(/{\w+}/g, "\\w+")+"(\\?.*)?$");
-	console.log(regex);
-	return regex
+	return new RegExp(path.replace(/{\w+}/g, "\\w+")+"(\\?.*)?$");
 }
 
 
@@ -82,20 +82,11 @@ self.addEventListener('install', function (event) {
 
 //TODO precache instead of runtime
 
+workbox.routing.registerRoute(/.*\.css/, workbox.strategies.networkFirst());
+workbox.routing.registerRoute(/.*\.js/, workbox.strategies.networkFirst());
+workbox.routing.registerRoute('/', workbox.strategies.networkFirst());
 workbox.routing.registerRoute(
-	/.*\.css/,
-	workbox.strategies.networkFirst()
-);
-workbox.routing.registerRoute(
-	/.*\.js/,
-	workbox.strategies.networkFirst()
-);
-workbox.routing.registerRoute(
-	"/",
-	workbox.strategies.networkFirst()
-);
-workbox.routing.registerRoute(
-	"/PersonalDashboard",
+	'/PersonalDashboard',
 	workbox.strategies.networkFirst()
 );
 workbox.routing.registerRoute(
@@ -138,15 +129,4 @@ function registerRoutes() {
 		pathToRegex(apiMethods["qdacity.codesystem.getCodeSystem"]),
 		getCodeSystemHandler,
 	);
-	/*
-	workbox.routing.registerRoute(
-		pathToRegex(apiMethods["qdacity.codes.insertCode"]),
-		insertCodeHandler,
-		'POST'
-	);
-	workbox.routing.registerRoute(
-		pathToRegex(apiMethods["qdacity.codesystem.getCodeSystem"]),
-		getCodeSystemHandler,
-	);
-	*/
 }

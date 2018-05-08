@@ -10,20 +10,24 @@ import TwitterAuthenticationProvider from './TwitterAuthenticationProvider.js';
 import FacebookAuthenticationProvider from './FacebookAuthenticationProvider.js';
 import QdacityTokenAuthenticationProvider from './QdacityTokenAuthenticationProvider';
 
-
 const TOKEN_REFRESH_ATER_MINUTES = 10;
-
 
 /* ------------------------------- AuthenticationProvider ----------------------------------- */
 export default class AuthenticationProvider {
 	constructor() {
-		
-
 		this.qdacityTokenAuthenticationProvider = new QdacityTokenAuthenticationProvider();
-		this.emailPasswordAuthenticationProvider = new EmailPasswordAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
-		this.googleAuthenticationProvider = new GoogleAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
-		this.twitterAuthenticationProvider = new TwitterAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
-		this.facebookAuthenticationProvider = new FacebookAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
+		this.emailPasswordAuthenticationProvider = new EmailPasswordAuthenticationProvider(
+			this.qdacityTokenAuthenticationProvider
+		);
+		this.googleAuthenticationProvider = new GoogleAuthenticationProvider(
+			this.qdacityTokenAuthenticationProvider
+		);
+		this.twitterAuthenticationProvider = new TwitterAuthenticationProvider(
+			this.qdacityTokenAuthenticationProvider
+		);
+		this.facebookAuthenticationProvider = new FacebookAuthenticationProvider(
+			this.qdacityTokenAuthenticationProvider
+		);
 
 		this.network = {
 			google: AuthenticationNetworks.GOOGLE, // uses hellojs
@@ -44,14 +48,15 @@ export default class AuthenticationProvider {
 			const { formatMessage } = IntlProvider.intl;
 			// automatically refresh token
 			console.log('automatically refreshing token');
-			if(_this.isSignedIn()) {
+			if (_this.isSignedIn()) {
 				_this.getToken(); // refreshes if neccessary
-				
-				if(!_this.isSignedIn()) {
+
+				if (!_this.isSignedIn()) {
 					vex.dialog.open({
 						message: formatMessage({
 							id: 'authenticationProvider.automaticTokenRefresh.failed',
-							defaultMessage: 'Authentication Error. Please reload the page and sign-in again.'
+							defaultMessage:
+								'Authentication Error. Please reload the page and sign-in again.'
 						}),
 						buttons: [
 							$.extend({}, vex.dialog.buttons.YES, {
@@ -60,18 +65,17 @@ export default class AuthenticationProvider {
 									defaultMessage: 'Close'
 								})
 							})
-						],
+						]
 					});
 				}
 			}
-
 		}, 60 * 1000 * TOKEN_REFRESH_ATER_MINUTES); // every 10 min
 	}
 
 	/**
 	 * Signs-in on google account via a popup.
 	 * Signs out all accounts beforehand!
-	 * @return {Promise} 
+	 * @return {Promise}
 	 * If the sign-in was successful (Google + Qdacity), then the google profile is resolved.
 	 * If the sign-in for Google was not successful (Qdacity automatically also failed), the error is rejeceted.
 	 * If the sign-in for Google succeeded but for Qdacity not, then the google profile is rejected.
@@ -95,7 +99,7 @@ export default class AuthenticationProvider {
 	/**
 	 * Signs-in on twitter account via a popup.
 	 * Signs out all accounts beforehand!
-	 * @return {Promise} 
+	 * @return {Promise}
 	 * If the sign-in was successful (Twitter + Qdacity), then the Twitter profile is resolved.
 	 * If the sign-in for Twitter was not successful (Qdacity automatically also failed), the error is rejeceted.
 	 * If the sign-in for Twitter succeeded but for Qdacity not, then the Twitter profile is rejected.
@@ -119,7 +123,7 @@ export default class AuthenticationProvider {
 	/**
 	 * Signs-in on Facebook account via a popup.
 	 * Signs out all accounts beforehand!
-	 * @return {Promise} 
+	 * @return {Promise}
 	 * If the sign-in was successful (Facebook + Qdacity), then the Facebook profile is resolved.
 	 * If the sign-in for Facebook was not successful (Qdacity automatically also failed), the error is rejeceted.
 	 * If the sign-in for Facebook succeeded but for Qdacity not, then the Facebook profile is rejected.
@@ -149,7 +153,7 @@ export default class AuthenticationProvider {
 		var _this = this;
 		const promise = new Promise(async function(resolve, reject) {
 			try {
-				const googleProfile = await _this.googleAuthenticationProvider.silentSignIn(); 
+				const googleProfile = await _this.googleAuthenticationProvider.silentSignIn();
 				_this.activeNetwork = _this.network.google_silent;
 				_this.synchronizeTokenWithGapi();
 				resolve(googleProfile);
@@ -163,13 +167,16 @@ export default class AuthenticationProvider {
 	/**
 	 * Signs-in on the qdacity account with email and password.
 	 * Signs out all accounts beforehand!
-	 * @param {String} email 
-	 * @param {String} password 
+	 * @param {String} email
+	 * @param {String} password
 	 * @returns {Promise}
 	 */
 	async signInWithEmailPassword(email, password) {
 		this.signOut();
-		const signinResult = await this.emailPasswordAuthenticationProvider.signIn(email, password);
+		const signinResult = await this.emailPasswordAuthenticationProvider.signIn(
+			email,
+			password
+		);
 		this.activeNetwork = this.network.email_password;
 		this.synchronizeTokenWithGapi();
 		return signinResult;
@@ -182,7 +189,8 @@ export default class AuthenticationProvider {
 	async silentSignInWithQdacityToken() {
 		const _this = this;
 		const promise = new Promise(async function(resolve, reject) {
-			if(_this.qdacityTokenAuthenticationProvider.isSignedIn()) { // tries to restore token
+			if (_this.qdacityTokenAuthenticationProvider.isSignedIn()) {
+				// tries to restore token
 				_this.activeNetwork = _this.network.email_password;
 				await _this.synchronizeTokenWithGapi();
 				_this.qdacityTokenAuthenticationProvider.authStateChaned(); // has to be called after sync with gapi
@@ -251,15 +259,13 @@ export default class AuthenticationProvider {
 		return this.qdacityTokenAuthenticationProvider.getToken();
 	}
 
-	/** 
+	/**
 	 * This returns the matching format for the authorization header.
-	 * Format: <token> <identity_provider> 
+	 * Format: <token> <identity_provider>
 	 * 'Bearer' has to be prepended!
 	 */
 	getEncodedToken() {
-		return this.encodeTokenWithIdentityProvider(
-			this.getToken()
-		);
+		return this.encodeTokenWithIdentityProvider(this.getToken());
 	}
 
 	/**
@@ -310,13 +316,18 @@ export default class AuthenticationProvider {
 
 	/**
 	 * Tries to register a user with email and password at qdacity.
-	 * @param {String} email 
-	 * @param {String} password 
-	 * @param {String} givenName 
-	 * @param {String} surName 
+	 * @param {String} email
+	 * @param {String} password
+	 * @param {String} givenName
+	 * @param {String} surName
 	 */
 	registerUserEmailPassword(email, password, givenName, surName) {
-		return this.emailPasswordAuthenticationProvider.register(email, password, givenName, surName);
+		return this.emailPasswordAuthenticationProvider.register(
+			email,
+			password,
+			givenName,
+			surName
+		);
 	}
 
 	/**
@@ -329,7 +340,11 @@ export default class AuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	registerGoogleUser(givenName, surName, email) {
-		return this.googleAuthenticationProvider.registerCurrentUser(givenName, surName, email);
+		return this.googleAuthenticationProvider.registerCurrentUser(
+			givenName,
+			surName,
+			email
+		);
 	}
 
 	/**
@@ -342,7 +357,11 @@ export default class AuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	registerTwitterUser(givenName, surName, email) {
-		return this.twitterAuthenticationProvider.registerCurrentUser(givenName, surName, email);
+		return this.twitterAuthenticationProvider.registerCurrentUser(
+			givenName,
+			surName,
+			email
+		);
 	}
 
 	/**
@@ -355,7 +374,11 @@ export default class AuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	registerFacebookUser(givenName, surName, email) {
-		return this.facebookAuthenticationProvider.registerCurrentUser(givenName, surName, email);
+		return this.facebookAuthenticationProvider.registerCurrentUser(
+			givenName,
+			surName,
+			email
+		);
 	}
 
 	/**

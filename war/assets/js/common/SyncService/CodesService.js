@@ -31,7 +31,7 @@ export default class CodesService {
 			resource: code,
 			parentId: parentID,
 			relationId: null,
-			relationSourceCodeId: null,
+			relationSourceCodeId: null
 		});
 	}
 
