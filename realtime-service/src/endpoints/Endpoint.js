@@ -1,6 +1,6 @@
-const google = require('googleapis');
+const {GoogleApis} = require('googleapis');
 const logger = require('../utils/Logger');
-
+const google = new GoogleApis();
 /**
  * Endpoint class
  *
@@ -66,31 +66,29 @@ class Endpoint {
       access_token: token,
     };
 
+logger.debug(`trying to discover ${root}/discovery/v1/apis/qdacity/${version}/rest`);
     // Try to discover the API
     google.discoverAPI(
       `${root}/discovery/v1/apis/qdacity/${version}/rest`,
       {
         auth: oauth2Client,
-      },
-      (err, api) => {
-        // Error: Something went wrong, e.g. API configuration wrong or
-        // authorization invalid.
-        if (err) {
-          logger.error('API discovery failed', err);
-          this._queue.map(params => params.reject('API discovery failed'));
-          return;
-        }
+	}).then((api)=> {
+		logger.debug(`API discovery callback ${JSON.stringify(api)}`);
+	  // Error: Something went wrong, e.g. API configuration wrong or
+	  // authorization invalid.
 
-        // Set new api and process queued requests
-        this._api = api;
-        this._queue.map(params => {
-          this._executeRequest(params.endpoint, params.args).then(
-            params.resolve,
-            params.reject
-          );
-        });
-      }
-    );
+	  // Set new api and process queued requests
+	  this._api = api;
+	  this._queue.map(params => {
+		this._executeRequest(params.endpoint, params.args).then(
+		  params.resolve,
+		  params.reject
+	  );
+	  });
+	}
+).catch((err) => {logger.error('API discovery failed', err);
+this._queue.map(params => params.reject('API discovery failed'));
+});
   }
 
   /**
@@ -104,6 +102,7 @@ class Endpoint {
    */
   request(endpoint, args) {
     if (this._api === null) {
+		logger.debug('push to queue');
       return this._pushToQueue(endpoint, args);
     } else {
       return this._executeRequest(endpoint, args);
