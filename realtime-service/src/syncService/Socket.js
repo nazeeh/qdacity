@@ -101,10 +101,12 @@ class Socket {
    *                       ("ok", data), with data being data parameter.
    * @arg {mixed} data - Data to be sent with ack and event.
    */
-  handleApiResponse(event, ack, data) {
+  handleApiResponse(event, ack, res) {
+	  const data = res.data;
+	  logger.info(' handling response');
     // Send acknowledgement to initiating client
-    ack('ok', data);
-
+    //ack('ok', data);
+logger.info(' ACKNOWLEDGED' + JSON.stringify({...data}));
     // Emit event to socket's projectRoom
     this._emitToProject(event, data);
   }
