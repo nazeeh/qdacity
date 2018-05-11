@@ -4,7 +4,6 @@ importScripts(
 
 import { listProjectHandler, listValidationProjectHandler, getProjectHandler } from "./handlers/ProjectHandler";
 import { getCodeSystemHandler } from "./handlers/CodeSystemHandler";
-import { insertCodeHandler } from "./handlers/CodeHandler";
 
 
 const VERSION = 9;
@@ -127,10 +126,5 @@ function registerRoutes() {
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.codesystem.getCodeSystem"]),
 		getCodeSystemHandler,
-	);
-	workbox.routing.registerRoute(
-		pathToRegex(apiMethods["qdacity.codes.insertCode"]),
-		insertCodeHandler,
-		"POST"
 	);
 }
