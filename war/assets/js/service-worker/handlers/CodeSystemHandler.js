@@ -1,5 +1,6 @@
 import CodeSystemService from "../db/CodeSystemService";
-import ResponseHandler from "./ResponseHandler";
+import ResponseHandler, {RESPONSE} from "./ResponseHandler";
+
 
 export const getCodeSystemHandler = ({url, event}) => {
 	console.log('[ServiceWorker] getCodeSystemHandler');

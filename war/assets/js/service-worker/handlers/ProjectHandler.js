@@ -1,5 +1,5 @@
 import ProjectService from "../db/ProjectService";
-import ResponseHandler from "./ResponseHandler";
+import ResponseHandler, {RESPONSE} from "./ResponseHandler";
 
 export const listProjectHandler = ({url, event}) => {
 	console.log('[ServiceWorker] listProjectHandler');

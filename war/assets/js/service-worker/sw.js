@@ -1,9 +1,10 @@
 importScripts(
-	'https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js'
+	'https://storage.googleapis.com/workbox-cdn/releases/3.2.0/workbox-sw.js'
 );
 
 import { listProjectHandler, listValidationProjectHandler, getProjectHandler } from "./handlers/ProjectHandler";
 import { getCodeSystemHandler } from "./handlers/CodeSystemHandler";
+import { insertCodeHandler } from "./handlers/CodeHandler";
 
 
 const VERSION = 9;
@@ -63,6 +64,7 @@ function _parseDiscoveryDoc(discovery) {
  * @returns {RegExp}
  */
 function pathToRegex(path) {
+	console.log(path);
 	return new RegExp(path.replace(/{\w+}/g, "\\w+")+"(\\?.*)?$");
 }
 
@@ -125,5 +127,10 @@ function registerRoutes() {
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.codesystem.getCodeSystem"]),
 		getCodeSystemHandler,
+	);
+	workbox.routing.registerRoute(
+		pathToRegex(apiMethods["qdacity.codes.insertCode"]),
+		insertCodeHandler,
+		"POST"
 	);
 }

@@ -1,6 +1,6 @@
 import DBService from "./DBService";
-import ResponseHelper from "./ResponseHelper";
 import { STORE_NAMES } from "./constants";
+import ResponseHelper from "./ResponseHelper";
 
 export default class ProjectService {
 	constructor() {
@@ -43,7 +43,7 @@ export default class ProjectService {
 	 * Retrieves a single Project from the database
 	 * @param userId - The database that is to be searched
 	 * @param params - array of paramas. Should contain only one param: projectID(String)
-	 * @returns {Promise<Response>}
+	 * @returns {Promise<>}
 	 */
 	static getProject(userId, params) {
 		const projectId = params[0];
@@ -51,7 +51,7 @@ export default class ProjectService {
 			const tx = db.transaction(STORE_NAMES.PROJECTS.name, 'readonly');
 			const store = tx.objectStore(STORE_NAMES.PROJECTS.name);
 			return store.get(projectId).then(function (val) {
-				return ResponseHelper.resultToResponse(val);
+				return val;
 			})
 		});
 	}
@@ -59,14 +59,14 @@ export default class ProjectService {
 	/**
 	 * Retrieve all Projects from the database
 	 * @param userId - The database that is to be searched
-	 * @returns {Promise<Response>}
+	 * @returns {Promise<>}
 	 */
 	static getProjects(userId) {
 		return DBService.openDB(userId).then(function (db) {
 			const tx = db.transaction(STORE_NAMES.PROJECTS.name, 'readonly');
 			const store = tx.objectStore(STORE_NAMES.PROJECTS.name);
 			return store.getAll().then(function (items) {
-				return ResponseHelper.listResultToResponse(items);
+				return ResponseHelper.wrapArray(items);
 			})
 		});
 	}
@@ -76,7 +76,7 @@ export default class ProjectService {
 			const tx = db.transaction(STORE_NAMES.VALIDATION_PROJECTS.name, 'readonly');
 			const store = tx.objectStore(STORE_NAMES.VALIDATION_PROJECTS.name);
 			return store.getAll().then(function (items) {
-				return ResponseHelper.listResultToResponse(items);
+				return ResponseHelper.wrapArray(items);
 			})
 		});
 	}

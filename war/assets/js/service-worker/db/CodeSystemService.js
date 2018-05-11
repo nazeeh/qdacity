@@ -1,6 +1,6 @@
 import DBService from "./DBService";
+import {STORE_NAMES} from "./constants";
 import ResponseHelper from "./ResponseHelper";
-import { STORE_NAMES } from "./constants";
 
 export default class CodeSystemService {
 	constructor() {
@@ -33,17 +33,41 @@ export default class CodeSystemService {
 	 * @param params - an array of params. Should only hold one item: codesystemid(String)
 	 * @returns {Promise<Response>}
 	 */
+
+	/**
+	 *
+	 * @param userId
+	 * @param params
+	 * @returns {Promise<any[]>}
+	 */
 	static getCodeSystem(userId, params) {
 		const codeSystemID = params[0];
 		return DBService.openDB(userId).then(function (db) {
 			const tx = db.transaction(STORE_NAMES.CODES.name, 'readonly');
 			const store = tx.objectStore(STORE_NAMES.CODES.name);
 			return store.getAll().then(function (items) {
-				const codesOfCodeSystem = items.filter(code => code.codesystemID === codeSystemID);
-				return ResponseHelper.listResultToResponse(codesOfCodeSystem);
+				return ResponseHelper.wrapArray(items.filter(code => code.codesystemID === codeSystemID));
 			})
 		});
+	}
 
+	/**
+	 * Gets the code Ids (not DB Keys!) from the codesystem as List
+	 *
+	 * @param codesystemId which Codesystem ID
+	 * @param user The user who performs the operation
+	 * @return A list of Code IDs (not DB Keys!)
+	 * @throws UnauthorizedException if user is not authorized to use this
+	 * codesystem
+	 */
+	static getCodeNamesAndIds(userId, codesystemId) {
+		const codes = CodeSystemService.getCodeSystem(userId, [codesystemId]);
+		let codeIds = {};
+		for (code of codes.items) {
+			//IMPORTANT: Using CodeId (Actual Code Id) and NOT id (Database Key)
+			codeIds[code.name] =  code.codeID;
+		}
+		return codeIds;
 	}
 }
 

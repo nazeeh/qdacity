@@ -1,6 +1,5 @@
 import {apiMethods} from "../sw";
 
-
 export default class ResponseHandler {
 	constructor() {
 	}
@@ -38,16 +37,19 @@ export default class ResponseHandler {
 	 * Calls the passed function that in most cases queries the database and returns the result
 	 *
 	 * @param dbHandler
+	 * @param responseType
 	 * @param args - array of arguments that should be passed to the dbHandler(e.g an ID value)
-	 * @returns {Promise<any>}
+	 * @returns {Promise<Response>}
 	 */
-	static handleBadResponse(dbHandler, ...args) {
+	static handleBadResponse(dbHandler,...args) {
 		console.log('[ServiceWorker] Bad Response from fetch ');
 		return caches.match(apiMethods["qdacity.user.getCurrentUser"]).then(function (cache_response) {
 			return cache_response.json()
 		}).then(function (user) {
 			const userId = user.id;
-			return dbHandler(userId, args);
+			return dbHandler(userId, args).then(function (value) {
+				return new Response(JSON.stringify(value));
+			});
 		});
 	}
 

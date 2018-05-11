@@ -1,33 +1,21 @@
-export default class CodeSystemService {
+export default class ResponseHelper {
 	constructor() {
 	}
 
 	/**
 	 *
-	 * Wraps an array (e.g retrieved from the database) into a Response, that will be used in the Promisizer
+	 * Wraps an array (e.g retrieved from the database) into an Object with the array is items property
 	 *
-	 * @param result - The array that should be wrapped into a response
-	 * @returns {Response}
+	 * @param result - The array that should be wrapped
+	 * @return
 	 */
-	static listResultToResponse(result) {
-		const response = {
+	static wrapArray(result) {
+		return {
 			items: result,
 			result: {
 				items: result
 			}
 		};
-		return new Response(JSON.stringify(response), {});
-	}
-
-	/**
-	 *
-	 * Wraps an object (e.g retrieved from the database) into a Response, that will be used in the Promisizer
-	 *
-	 * @param result - The object that should be wrapped into a response
-	 * @returns {Response}
-	 */
-	static resultToResponse(result) {
-		return new Response(JSON.stringify(result), {});
 	}
 
 }
