@@ -37,4 +37,12 @@ export default class UserGroupEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	static addParticipantByEmail(groupId, userEmail) {
+		var apiMethod = gapi.client.qdacity.usergroup.addParticipantByEmail({
+			groupId: groupId,
+			userEmail: userEmail
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
 }

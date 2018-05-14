@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import UserGroupEndpoint from '../../common/endpoints/UserGroupEndpoint.js';
 
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
+import GroupInviteUserField from './GroupInviteUserField.jsx';
 import GroupUserList from './GroupUserList.jsx';
 import ProjectList from '../personal-dashboard/ProjectList.jsx';
 import CourseList from '../personal-dashboard/CourseList.jsx';
@@ -200,10 +201,27 @@ export default class GroupDashboard extends Component {
 				</StyledCourseListWrapper>
 
 				<StyledUserListWrapper>
-					<GroupUserList
-						userGroup={this.state.userGroup}
-						isOwner={this.state.isOwner}
-					/>
+					<div className="box box-default">
+						<div className="box-header with-border">
+							<h3 className="box-title">
+								<FormattedMessage
+									id="usergroup..userlist.heading"
+									defaultMessage="Users"
+								/>
+							</h3>
+						</div>
+							
+						<div className="box-body">
+							<GroupInviteUserField
+								userGroup={this.state.userGroup}
+								isOwner={this.state.isOwner}
+							/>
+							<GroupUserList
+								userGroup={this.state.userGroup}
+								isOwner={this.state.isOwner}
+							/>
+						</div>
+					</div>
 				</StyledUserListWrapper>
 			</StyledDashboard>
 		);
