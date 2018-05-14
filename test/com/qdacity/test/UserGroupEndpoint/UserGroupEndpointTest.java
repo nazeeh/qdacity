@@ -84,6 +84,42 @@ public class UserGroupEndpointTest {
     }
 
     @Test
+    public void testUpdateUserGroupName() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser);
+
+        String groupName = "groupName";
+        UserGroup userGroup = new UserGroupEndpoint().insertUserGroup("old", authUser);
+        userGroup = new UserGroupEndpoint().updateUserGroupName(userGroup.getId(), groupName, authUser);
+
+        assertEquals(groupName, userGroup.getName());
+    }
+
+    @Test
+    public void testUpdateUserGroupNameNotLoggedIn() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser);
+
+        String groupName = "groupName";
+        UserGroup userGroup = new UserGroupEndpoint().insertUserGroup("old", authUser);
+
+        thrown.expect(UnauthorizedException.class);
+        thrown.expectMessage("The user could not be authenticated");
+        userGroup = new UserGroupEndpoint().updateUserGroupName(userGroup.getId(), groupName, null);
+    }
+
+    @Test
+    public void testUpdateUserGroupNameNull() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser);
+
+        UserGroup userGroup = new UserGroupEndpoint().insertUserGroup("name", authUser);
+        thrown.expect(BadRequestException.class);
+        thrown.expectMessage("The name must not be null or empty!");
+        userGroup = new UserGroupEndpoint().updateUserGroupName(userGroup.getId(), null, authUser);
+    }
+
+    @Test
     public void testListOwnedUserGroup() throws UnauthorizedException, BadRequestException {
         AuthenticatedUser authUser = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
         User user = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser);

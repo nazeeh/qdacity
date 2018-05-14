@@ -71,6 +71,29 @@ public class UserGroupEndpoint {
         return userGroup;
     }
 
+    public UserGroup updateUserGroupName(@Named("groupId") Long groupId, @Named("name") String name, com.google.api.server.spi.auth.common.User loggedInUser) throws BadRequestException, UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("The user could not be authenticated");
+        }
+        if(name == null || name.isEmpty()) {
+            throw new BadRequestException("The name must not be null or empty!");
+        }
+
+        UserGroup userGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
+
+        Authorization.checkAuthorization(userGroup, loggedInUser); // only owners and admins
+
+        userGroup.setName(name);
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            mgr.makePersistent(userGroup);
+            Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
+        } finally {
+            mgr.close();
+        }
+        return userGroup;
+    }
+
     /**
      * Lists all owned user groups for the user with the given userId.
      * If the userId is empty, the owned userGroups of the requesting users is returned.
