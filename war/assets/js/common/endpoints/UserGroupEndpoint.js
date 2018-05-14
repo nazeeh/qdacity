@@ -45,4 +45,12 @@ export default class UserGroupEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	static removeUser(groupId, userId) {
+		var apiMethod = gapi.client.qdacity.usergroup.removeUser({
+			groupId: groupId,
+			userId: userId
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
 }
