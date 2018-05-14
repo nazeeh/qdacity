@@ -224,7 +224,7 @@ class Socket {
    * @return {string} project room name
    */
   _getProjectRoomName() {
-    return `prj/${this.project.id}`;
+    return `prj/${this.project.type}/${this.project.id}`;
   }
 }
 
