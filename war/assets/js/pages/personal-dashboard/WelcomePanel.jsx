@@ -64,7 +64,7 @@ export default class WelcomePanel extends React.Component {
 									<b>
 										<FormattedMessage
 											id="welcomepanel.nyt"
-											defaultMessage="NYT WS2017 at FAU"
+											defaultMessage="NYT SS2018 at FAU"
 										/>
 									</b>
 								),
