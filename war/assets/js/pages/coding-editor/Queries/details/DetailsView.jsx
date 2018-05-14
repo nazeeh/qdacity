@@ -19,7 +19,6 @@ const StyledInfoBox = styled.div`
 `;
 
 export default class DetailsView extends React.Component {
-
 	constructor(props) {
 		super(props);
 	}
@@ -34,9 +33,13 @@ export default class DetailsView extends React.Component {
 		let foundOverlaps = false;
 
 		for (let i = 0; i < this.props.documents.length; i++) {
-			const codingDocument = this.props.codingResult.getDocument(this.props.documents[i].id);
+			const codingDocument = this.props.codingResult.getDocument(
+				this.props.documents[i].id
+			);
 
-			if (codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID) > 0) {
+			if (
+				codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID) > 0
+			) {
 				foundOverlaps = true;
 				break;
 			}
@@ -47,11 +50,7 @@ export default class DetailsView extends React.Component {
 		}
 
 		// Render content
-		return (
-			<StyledContainer>
-				{this.renderDocuments()}
-			</StyledContainer>
-		);
+		return <StyledContainer>{this.renderDocuments()}</StyledContainer>;
 	}
 
 	renderNoCodeSelected() {
@@ -87,7 +86,9 @@ export default class DetailsView extends React.Component {
 	renderDocument(document) {
 		const codingDocument = this.props.codingResult.getDocument(document.id);
 
-		if (codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID) <= 0) {
+		if (
+			codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID) <= 0
+		) {
 			return '';
 		}
 

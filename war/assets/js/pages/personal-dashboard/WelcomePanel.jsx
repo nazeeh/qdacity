@@ -8,15 +8,15 @@ export default class WelcomePanel extends React.Component {
 		super(props);
 
 		this.state = {
-			userDisplayName: ""
-		}
+			userDisplayName: ''
+		};
 
 		this.authenticationProvider = props.auth.authentication;
 		this.redirectToNytProject = this.redirectToNytProject.bind(this);
 	}
 
 	componentDidMount() {
-		this.authenticationProvider.getProfile().then((profile) => { 
+		this.authenticationProvider.getProfile().then(profile => {
 			this.setState({
 				userDisplayName: profile.displayName
 			});

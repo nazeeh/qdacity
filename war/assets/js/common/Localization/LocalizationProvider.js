@@ -28,7 +28,10 @@ class LocalizationProvider extends IntlProvider {
 			// for debug purposes
 			window['QDAcityLocalization'] = this;
 
-			const [fallbackLanguage, fallbackRegion] = LocalizationProvider.userLocale;
+			const [
+				fallbackLanguage,
+				fallbackRegion
+			] = LocalizationProvider.userLocale;
 			this.changeLanguage(fallbackLanguage, fallbackRegion);
 		}
 		this.app = this.props.app || this;
@@ -58,7 +61,7 @@ class LocalizationProvider extends IntlProvider {
 			language: PropTypes.string.isRequired,
 			locale: PropTypes.string.isRequired,
 			messages: PropTypes.object.isRequired,
-			isGlobal: PropTypes.bool.isRequired,
+			isGlobal: PropTypes.bool.isRequired
 		};
 	}
 
@@ -92,7 +95,7 @@ class LocalizationProvider extends IntlProvider {
 	 */
 	static isSupportedLocale(locale) {
 		const [language, region] = locale.split('-', 2);
-		if(!globalLocalizationState.supportedLocales.has(language)) return false;
+		if (!globalLocalizationState.supportedLocales.has(language)) return false;
 		return globalLocalizationState.supportedLocales.get(language).has(region);
 	}
 
@@ -149,17 +152,17 @@ class LocalizationProvider extends IntlProvider {
 	}
 
 	static get messages() {
-		if(!LocalizationProvider.instance) return 'en-US';
+		if (!LocalizationProvider.instance) return 'en-US';
 		return LocalizationProvider.instance.messages;
 	}
 
 	static get locale() {
-		if(!LocalizationProvider.instance) return 'en-US';
+		if (!LocalizationProvider.instance) return 'en-US';
 		return LocalizationProvider.instance.locale;
 	}
 
 	static get language() {
-		if(!LocalizationProvider.instance) return 'en';
+		if (!LocalizationProvider.instance) return 'en';
 		return LocalizationProvider.instance.language;
 	}
 
@@ -169,7 +172,7 @@ class LocalizationProvider extends IntlProvider {
 
 	static changeLanguage(language = 'en', region = null) {
 		console.log(`Language change to ${language} (${region}) requested`);
-		if(!LocalizationProvider.instance) {
+		if (!LocalizationProvider.instance) {
 			console.error('Global state not initialized');
 			return;
 		}
@@ -178,7 +181,7 @@ class LocalizationProvider extends IntlProvider {
 
 	static changeLocale(locale = 'en-US') {
 		console.log(`Locale change to ${locale} requested`);
-		if(!LocalizationProvider.instance) {
+		if (!LocalizationProvider.instance) {
 			console.error('Global state not initialized');
 			return;
 		}
@@ -206,8 +209,12 @@ class LocalizationProvider extends IntlProvider {
 		// Will not be used for now.
 		const accountLanguage = null;
 		// @ts-ignore
-		const localeOrLanguage = nonAccountLanguage || accountLanguage ||
-			navigator.language || navigator.browserLanguage || 'en-US';
+		const localeOrLanguage =
+			nonAccountLanguage ||
+			accountLanguage ||
+			navigator.language ||
+			navigator.browserLanguage ||
+			'en-US';
 		return localeOrLanguage.split('-', 2);
 	}
 
@@ -215,7 +222,6 @@ class LocalizationProvider extends IntlProvider {
 		return LocalizationProvider.userLocale.shift();
 	}
 }
-
 
 /**
  * This module wraps the react-intl extension in a
@@ -233,7 +239,7 @@ const globalLocalizationState = {
 	countries: new Map(Countries),
 	/** @type {LocalizationProvider} */
 	singleton: null,
-	languages: new Map(Languages),
+	languages: new Map(Languages)
 };
 
 /**
@@ -241,14 +247,14 @@ const globalLocalizationState = {
  */
 // fix missing de-DE locale
 ///@ts-ignore
-de.splice(1, 0, {locale: 'de-DE', parentLocale: 'de'});
-addLocaleData([...en, ...de, {locale: 'test-US', parentLocale: 'en-US'}]);
+de.splice(1, 0, { locale: 'de-DE', parentLocale: 'de' });
+addLocaleData([...en, ...de, { locale: 'test-US', parentLocale: 'en-US' }]);
 
 // add test US
 globalLocalizationState.supportedLocales.set('test', new Set(['US']));
-for (const localeInfo of [].concat(en,de)) {
+for (const localeInfo of [].concat(en, de)) {
 	const [language, region] = localeInfo.locale.split('-', 2);
-	if(!globalLocalizationState.supportedLocales.has(language)) {
+	if (!globalLocalizationState.supportedLocales.has(language)) {
 		globalLocalizationState.supportedLocales.set(language, new Set());
 	}
 	if (region != undefined)
@@ -275,4 +281,3 @@ async function loadMessages(language = 'en', callback) {
 }
 
 export default LocalizationProvider;
-

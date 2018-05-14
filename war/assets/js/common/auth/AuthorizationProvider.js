@@ -7,11 +7,14 @@ export default class AuthorizationProvider {
 			});
 		}
 
-		if(prj.owningUserGroups !== undefined && prj.owningUserGroups !== null
-			&& user.userGroups !== undefined && user.userGroups !== null) {
-
+		if (
+			prj.owningUserGroups !== undefined &&
+			prj.owningUserGroups !== null &&
+			user.userGroups !== undefined &&
+			user.userGroups !== null
+		) {
 			prj.owningUserGroups.forEach(function(userGroup) {
-				if(user.userGroups.includes(userGroup)) isOwner = true;
+				if (user.userGroups.includes(userGroup)) isOwner = true;
 			});
 		}
 		return isOwner;
@@ -23,11 +26,14 @@ export default class AuthorizationProvider {
 			isOwner = user.courses.indexOf(course.id) == -1 ? false : true;
 		}
 
-		if(course.owningUserGroups !== undefined && course.owningUserGroups !== null
-			&& user.userGroups !== undefined && user.userGroups !== null) {
-
+		if (
+			course.owningUserGroups !== undefined &&
+			course.owningUserGroups !== null &&
+			user.userGroups !== undefined &&
+			user.userGroups !== null
+		) {
 			course.owningUserGroups.forEach(function(userGroup) {
-				if(user.userGroups.includes(userGroup)) isOwner = true;
+				if (user.userGroups.includes(userGroup)) isOwner = true;
 			});
 		}
 		return isOwner;
@@ -35,7 +41,10 @@ export default class AuthorizationProvider {
 
 	isTermCourseOwner(user, termCourse, parentCourse) {
 		var isOwner = false;
-		if (typeof user.termCourses != 'undefined' && user.termCourses.indexOf(termCourse.id) != -1) {
+		if (
+			typeof user.termCourses != 'undefined' &&
+			user.termCourses.indexOf(termCourse.id) != -1
+		) {
 			return true;
 		}
 

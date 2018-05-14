@@ -21,7 +21,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 	}
 
 	onSignedIn() {
-		if(!this.props.onSignedIn) {
+		if (!this.props.onSignedIn) {
 			console.error('No onSignedIn method given in SigninWithGoogleBtn.');
 			return;
 		}
@@ -61,7 +61,6 @@ export default class SigninWithGoogleBtn extends React.Component {
 				id: 'sign.in.with.google.btn.confirm',
 				defaultMessage: 'Please confirm:'
 			}),
-			// FIXME
 			input: [
 				`<label for="firstName">${firstNameLabel}</label><input name="firstName" type="text" placeholder="${firstNameLabel}" value="${firstName}" required />`,
 				`<label for="lastName">${lastNameLabel}</label><input name="lastName" type="text" placeholder="${lastNameLabel}" value="${lastName}" required />`,
@@ -115,45 +114,48 @@ export default class SigninWithGoogleBtn extends React.Component {
 		});
 
 		const _this = this;
-		this.authenticationProvider.signInWithGoogle().then(function(googleProfile) {
-			_this.onSignedIn();
-		}, function(googleProfileOrError) {
-
-			if(googleProfileOrError.error) {
-				// on google error
-				_this.setState({
-					loading: false
-				})
-				return;
-			}
-
-			var decider = new BinaryDecider(
-				formatMessage({
-					id: 'sign.in.with.google.btn.register_prompt',
-					defaultMessage:
-						'Your account does not seem to be registered with QDAcity.'
-				}),
-				formatMessage({
-					id: 'sign.in.with.google.btn.use_different',
-					defaultMessage: 'Use Different Account'
-				}),
-				formatMessage({
-					id: 'sign.in.with.google.btn.register_account',
-					defaultMessage: 'Register Account'
-				})
-			);
-			decider.showModal().then(function(value) {
-				if (value == 'optionA') {
-					_this.signIn();
-				} else  {
-					_this.registerAccount(googleProfileOrError);
+		this.authenticationProvider.signInWithGoogle().then(
+			function(googleProfile) {
+				_this.onSignedIn();
+			},
+			function(googleProfileOrError) {
+				if (googleProfileOrError.error) {
+					// on google error
+					_this.setState({
+						loading: false
+					});
+					return;
 				}
-			});
-		});
+
+				var decider = new BinaryDecider(
+					formatMessage({
+						id: 'sign.in.with.google.btn.register_prompt',
+						defaultMessage:
+							'Your account does not seem to be registered with QDAcity.'
+					}),
+					formatMessage({
+						id: 'sign.in.with.google.btn.use_different',
+						defaultMessage: 'Use Different Account'
+					}),
+					formatMessage({
+						id: 'sign.in.with.google.btn.register_account',
+						defaultMessage: 'Register Account'
+					})
+				);
+				decider.showModal().then(function(value) {
+					if (value == 'optionA') {
+						_this.signIn();
+					} else {
+						_this.registerAccount(googleProfileOrError);
+					}
+				});
+			}
+		);
 	}
 
 	render() {
-		if (this.state.loading) return <ReactLoading color={(props) => props.theme.defaultText} />;
+		if (this.state.loading)
+			return <ReactLoading color={props => props.theme.defaultText} />;
 		return (
 			<BtnLg href="#" onClick={() => this.signIn()}>
 				<a>

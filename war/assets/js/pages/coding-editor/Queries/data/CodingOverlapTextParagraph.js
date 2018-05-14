@@ -1,15 +1,13 @@
-
 export default class CodingOverlapTextParagraph {
-
 	constructor() {
-        this.textParts = [];
-    }
-    
-    getTextParts() {
-        return this.textParts;
-    }
+		this.textParts = [];
+	}
 
-    addPart(textPart) {
-        this.textParts.push(textPart);
-    }
+	getTextParts() {
+		return this.textParts;
+	}
+
+	addPart(textPart) {
+		this.textParts.push(textPart);
+	}
 }

@@ -55,15 +55,14 @@ const StyledColorMark = styled.div`
 `;
 
 const StyledColorMarkMainCode = StyledColorMark.extend`
-	background-color: #B5D5FF;
+	background-color: #b5d5ff;
 `;
 
 const StyledColorMarkOtherCode = StyledColorMark.extend`
-	background-color: #A5FEE3;
+	background-color: #a5fee3;
 `;
 
-const StyledContainerCollapsible = styled.div`
-`;
+const StyledContainerCollapsible = styled.div``;
 
 const StyledSeparator = styled.div`
 	height: 1px;
@@ -72,7 +71,6 @@ const StyledSeparator = styled.div`
 `;
 
 export default class DocumentDetailsItem extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -81,28 +79,30 @@ export default class DocumentDetailsItem extends React.Component {
 
 	toggleText() {
 		this.textCollapsibleRef.toggle();
-	}	
+	}
 
 	render() {
 		return (
-			<StyledContainer>	
+			<StyledContainer>
 				{this.renderContent()}
 				{this.renderText()}
-				{this.renderSeparator()}				
+				{this.renderSeparator()}
 			</StyledContainer>
 		);
 	}
 
 	renderContent() {
-		const overlapPercentageByMainCode = (this.props.codingOverlap.getOverlapPercentageByMainCode() * 100).toFixed(2);
-		const overlapPercentageByOtherCode = (this.props.codingOverlap.getOverlapPercentageByOtherCode() * 100).toFixed(2);
+		const overlapPercentageByMainCode = (
+			this.props.codingOverlap.getOverlapPercentageByMainCode() * 100
+		).toFixed(2);
+		const overlapPercentageByOtherCode = (
+			this.props.codingOverlap.getOverlapPercentageByOtherCode() * 100
+		).toFixed(2);
 
 		return (
 			<StyledContentContainer>
-				<StyledContainerIndex>
-					#{this.props.index + 1}
-				</StyledContainerIndex>
-				
+				<StyledContainerIndex>#{this.props.index + 1}</StyledContainerIndex>
+
 				<StyledContainerShowText>
 					<StyledShowText onClick={this.toggleText.bind(this)}>
 						<FormattedMessage
@@ -111,18 +111,26 @@ export default class DocumentDetailsItem extends React.Component {
 						/>
 					</StyledShowText>
 				</StyledContainerShowText>
-				
+
 				<StyledContainerOpenCodingEditor>
-					<StyledShowText onClick={() => this.props.openCodingEditor(this.props.codingOverlap.getCodingIdMain())}>
+					<StyledShowText
+						onClick={() =>
+							this.props.openCodingEditor(
+								this.props.codingOverlap.getCodingIdMain()
+							)
+						}
+					>
 						<FormattedMessage
 							id="codeQueriesDetailsItemOpenCoding"
 							defaultMessage="Open Coding"
 						/>
 					</StyledShowText>
 				</StyledContainerOpenCodingEditor>
-				
+
 				<StyledContainerOverlapPercentage>
-					{overlapPercentageByMainCode} % / {overlapPercentageByOtherCode} %  (<StyledColorMarkMainCode/>{this.props.code.name} / <StyledColorMarkOtherCode/>{this.props.selectedCode.name})
+					{overlapPercentageByMainCode} % / {overlapPercentageByOtherCode} % (<StyledColorMarkMainCode />
+					{this.props.code.name} / <StyledColorMarkOtherCode />
+					{this.props.selectedCode.name})
 				</StyledContainerOverlapPercentage>
 			</StyledContentContainer>
 		);
@@ -131,7 +139,11 @@ export default class DocumentDetailsItem extends React.Component {
 	renderText() {
 		return (
 			<StyledContainerCollapsible>
-				<Collapsible ref={(r) => {if (r) this.textCollapsibleRef = r}}>
+				<Collapsible
+					ref={r => {
+						if (r) this.textCollapsibleRef = r;
+					}}
+				>
 					<CodingOverlapText
 						codingOverlapText={this.props.codingOverlap.getTextContent()}
 					/>
@@ -145,8 +157,6 @@ export default class DocumentDetailsItem extends React.Component {
 			return '';
 		}
 
-		return (
-			<StyledSeparator />
-		);
+		return <StyledSeparator />;
 	}
 }

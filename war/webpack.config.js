@@ -22,18 +22,19 @@ module.exports = {
 		},
 		noEmitOnErrors: true,
 		minimizer: [
-		new UglifyJsPlugin({
-			cache: true,
-			parallel: true,
-			sourceMap: true
-		}),
-		new OptimizeCSSAssetsPlugin({})
+			new UglifyJsPlugin({
+				cache: true,
+				parallel: true,
+				sourceMap: true
+			}),
+			new OptimizeCSSAssetsPlugin({})
 		]
 	},
 	entry: {
 		index: './assets/js/pages/index/index.js',
 		'web-worker/codingCountWorker':
-			'./assets/js/web-worker/codingCountWorker.js'
+			'./assets/js/web-worker/codingCountWorker.js',
+		'service-worker/sw': './assets/js/service-worker/sw.js'
 	},
 	resolve: {
 		alias: {
@@ -83,10 +84,7 @@ module.exports = {
 			},
 			{
 				test: /\.css$/,
-				use: [
-					MiniCssExtractPlugin.loader,
-					'css-loader'
-				]
+				use: [MiniCssExtractPlugin.loader, 'css-loader']
 			},
 			{
 				test: /\.((png|jpg|gif|svg|eot|ttf|woff|woff2)(\?|=|.|[a-z]|[0-9])*)$/,
@@ -111,13 +109,13 @@ module.exports = {
 		}),
 
 		new MiniCssExtractPlugin({
-			filename: "styles.css",
-			chunkFilename: "[id].css"
+			filename: 'styles.css',
+			chunkFilename: '[id].css'
 		}),
 
 		new ExtractMessagesPlugin({
-                       outputPath: __dirname
-		}),
+			outputPath: __dirname
+		})
 	],
 	stats: {
 		// Nice colored output

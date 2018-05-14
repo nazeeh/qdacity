@@ -119,11 +119,10 @@ export default class UserMigration extends React.Component {
 	}
 
 	signIn() {
-		const _this = this; 
+		const _this = this;
 
-		this.authenticationProvider
-			.signInWithGoogle()
-			.then(function(googleProfile) {
+		this.authenticationProvider.signInWithGoogle().then(
+			function(googleProfile) {
 				/*
 				* Removing query parameters from URL.
 				* With google we always got ?sz=50 in the URL which gives you a
@@ -132,7 +131,8 @@ export default class UserMigration extends React.Component {
 				* When adding other LoginProviders this needs to be reviewed
 				*/
 				const url = URI(googleProfile.thumbnail).fragment(true);
-				const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+				const picSrcWithoutParams =
+					url.protocol() + '://' + url.hostname() + url.path();
 
 				_this.setState({
 					name: googleProfile.displayName,
@@ -143,8 +143,9 @@ export default class UserMigration extends React.Component {
 					isAlreadyMigrated: true
 				});
 				_this.checkMigrationPreconditions();
-			}, function(googleProfileOrError) {
-				if(!!googleProfileOrError.error) {
+			},
+			function(googleProfileOrError) {
+				if (googleProfileOrError.error) {
 					console.error('Sign in failed.');
 				} else {
 					/*
@@ -155,20 +156,22 @@ export default class UserMigration extends React.Component {
 					* When adding other LoginProviders this needs to be reviewed
 					*/
 					const url = URI(googleProfileOrError.thumbnail).fragment(true);
-					const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+					const picSrcWithoutParams =
+						url.protocol() + '://' + url.hostname() + url.path();
 
 					_this.setState({
 						name: googleProfileOrError.displayName,
 						email: googleProfileOrError.email,
 						picSrc: picSrcWithoutParams
 					});
-					
+
 					_this.setState({
 						isAlreadyMigrated: false
 					});
 					_this.checkMigrationPreconditions();
 				}
-			});
+			}
+		);
 	}
 
 	migrate() {
@@ -420,13 +423,13 @@ export default class UserMigration extends React.Component {
 				</StyledMigrationDescription>
 				<StyledMigrationFunctionality>
 					<GoogleSignIn
-						show={(this.access_token === null && this.id_token === null)}
+						show={this.access_token === null && this.id_token === null}
 					/>
 					<ProfileInfo
-						show={this.access_token !== null &&	this.id_token !== null}
+						show={this.access_token !== null && this.id_token !== null}
 					/>
 					<MigrationPreconditions
-						show={this.access_token !== null &&	this.id_token !== null}
+						show={this.access_token !== null && this.id_token !== null}
 					/>
 					<MigrationButton
 						show={

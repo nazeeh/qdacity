@@ -1,32 +1,30 @@
+import AuthenticationEndpoint from '../endpoints/AuthenticationEndpoint';
+
 //@ts-check
 
 export default class EmailPasswordAuthenticationProvider {
-
 	constructor(qdacityTokenAuthentcationProvider) {
 		this.qdacityTokenAuthentcationProvider = qdacityTokenAuthentcationProvider;
 	}
 
-	/** 
+	/**
 	 * Signs in with the given credentials.
 	 * @param email
 	 * @param password
-	 * @returns {Promise} 
+	 * @returns {Promise}
 	 */
 	signIn(email, password) {
 		const _this = this;
 		var promise = new Promise(function(resolve, reject) {
-			gapi.client.qdacity.authentication.email.getToken({
-				email: email,
-				pwd: password
-			}).execute(function(resp) {
-				if (!resp.code) {
+			AuthenticationEndpoint.getTokenEmailPwd(email, password)
+				.then(function(resp) {
 					_this.qdacityTokenAuthentcationProvider.setToken(resp.value);
 					_this.qdacityTokenAuthentcationProvider.authStateChaned();
 					resolve(resp);
-				} else {
+				})
+				.catch(function(resp) {
 					reject(resp);
-				}
-			});
+				});
 		});
 		return promise;
 	}
@@ -40,21 +38,11 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	register(email, password, givenName, surName) {
-		
-		var promise = new Promise(function(resolve, reject) {
-			gapi.client.qdacity.authentication.email.register({
-				givenName: givenName,
-				surName: surName,
-				email: email,
-				pwd: password
-			}).execute(function(resp) {
-				if (!resp.code) {
-					resolve(resp);
-				} else {
-					reject(resp);
-				}
-			});
-		});
-		return promise;
+		return AuthenticationEndpoint.registerEmailPwd(
+			email,
+			password,
+			givenName,
+			surName
+		);
 	}
 }

@@ -7,15 +7,17 @@ const StyledExpander = styled.div`
 
 const StyledWrapper = styled.div`
 	overflow: hidden;
-	height: ${props => 
-		(props.mode == Mode.COLLAPSING ? props.height + 'px' : 
-		(props.mode == Mode.COLLAPSED ? '0px' : 
-		(props.mode == Mode.EXPANDING ? props.height + 'px' : 
-		(props.mode == Mode.EXPANDED ? 'auto' : ''))))};
+	height: ${props =>
+		props.mode == Mode.COLLAPSING
+			? props.height + 'px'
+			: props.mode == Mode.COLLAPSED
+				? '0px'
+				: props.mode == Mode.EXPANDING
+					? props.height + 'px'
+					: props.mode == Mode.EXPANDED ? 'auto' : ''};
 `;
 
-const StyledContent = styled.div`
-`;
+const StyledContent = styled.div``;
 
 const Mode = {
 	COLLAPSING: 1,
@@ -32,22 +34,22 @@ const Mode = {
  * - onExpand: function which is called when the Collapsible finishs the expand animation
  */
 class Collapsible extends React.Component {
-
 	constructor(props) {
 		super(props);
 
-		this.duration = (this.props.duration ? this.props.duration: 300);
-		
+		this.duration = this.props.duration ? this.props.duration : 300;
+
 		this.interval = 30;
 		this.intervalOffset = 0;
-		
+
 		this.contentRef = null;
 
 		this.timerId = 0;
 		this.contentHeight = 0;
 
 		this.state = {
-			mode: (this.props.defaultCollapsed === true ? Mode.EXPANDED : Mode.COLLAPSED),
+			mode:
+				this.props.defaultCollapsed === true ? Mode.EXPANDED : Mode.COLLAPSED,
 			height: 0
 		};
 
@@ -57,15 +59,13 @@ class Collapsible extends React.Component {
 	componentWillUnmount() {
 		this.endTimer();
 	}
-	
+
 	toggle() {
 		if (this.state.mode == Mode.COLLAPSED) {
 			this.expand();
-		}
-		else if (this.state.mode == Mode.EXPANDED) {
+		} else if (this.state.mode == Mode.EXPANDED) {
 			this.collapse();
-		}
-		else {
+		} else {
 			// Do nothings
 		}
 	}
@@ -76,11 +76,14 @@ class Collapsible extends React.Component {
 			return;
 		}
 
-		this.setState({
-			mode: Mode.COLLAPSING
-		}, () => {
-			this.startTimer();
-		});
+		this.setState(
+			{
+				mode: Mode.COLLAPSING
+			},
+			() => {
+				this.startTimer();
+			}
+		);
 	}
 
 	expand() {
@@ -89,11 +92,14 @@ class Collapsible extends React.Component {
 			return;
 		}
 
-		this.setState({
-			mode: Mode.EXPANDING
-		}, () => {
-			this.startTimer();
-		});		
+		this.setState(
+			{
+				mode: Mode.EXPANDING
+			},
+			() => {
+				this.startTimer();
+			}
+		);
 	}
 
 	startTimer() {
@@ -106,50 +112,54 @@ class Collapsible extends React.Component {
 	endTimer() {
 		clearInterval(this.timerId);
 	}
-	
+
 	timerCallback() {
 		// Collapsing
 		if (this.state.mode == Mode.COLLAPSING) {
-			if (this.contentHeight != 0 && this.intervalOffset != 0.0 && this.state.height - this.intervalOffset > 0) {
+			if (
+				this.contentHeight != 0 &&
+				this.intervalOffset != 0.0 &&
+				this.state.height - this.intervalOffset > 0
+			) {
 				this.setState({
 					height: this.state.height - this.intervalOffset
 				});
-			}
-			else {
+			} else {
 				this.setState({
 					mode: Mode.COLLAPSED,
 					height: 0
 				});
-				
+
 				this.endTimer();
 
 				if (this.props.onCollapse) {
 					this.props.onCollapse();
 				}
 			}
-		}
-		// Expanding
-		else if (this.state.mode == Mode.EXPANDING) {
-			if (this.contentHeight != 0 && this.intervalOffset != 0.0 && this.state.height + this.intervalOffset <= this.contentHeight) {
+		} else if (this.state.mode == Mode.EXPANDING) {
+			// Expanding
+			if (
+				this.contentHeight != 0 &&
+				this.intervalOffset != 0.0 &&
+				this.state.height + this.intervalOffset <= this.contentHeight
+			) {
 				this.setState({
 					height: this.state.height + this.intervalOffset
 				});
-			}
-			else {
+			} else {
 				this.setState({
 					mode: Mode.EXPANDED,
 					height: this.contentHeight
 				});
 
 				this.endTimer();
-				
+
 				if (this.props.onExpand) {
 					this.props.onExpand();
 				}
 			}
-		}
-		// Invalid state
-		else {
+		} else {
+			// Invalid state
 			throw new Error('Invalid state in timer interval: ' + this.state.mode);
 		}
 	}
@@ -157,7 +167,11 @@ class Collapsible extends React.Component {
 	render() {
 		return (
 			<StyledWrapper mode={this.state.mode} height={this.state.height}>
-				<StyledContent innerRef={(r) => { if (r) this.contentRef = r;}}>
+				<StyledContent
+					innerRef={r => {
+						if (r) this.contentRef = r;
+					}}
+				>
 					{this.props.children}
 				</StyledContent>
 			</StyledWrapper>

@@ -12,7 +12,6 @@ const TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN = 'average-percentage-main';
 const TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER = 'average-percentage-other';
 
 export default class CodeList extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -33,12 +32,10 @@ export default class CodeList extends React.Component {
 			if (sortMode == SortMode.ASCENDING) {
 				if (value1 < value2) return -1;
 				if (value1 > value2) return 1;
-			}
-			else if (sortMode == SortMode.DESCENDING) {
+			} else if (sortMode == SortMode.DESCENDING) {
 				if (value2 < value1) return -1;
 				if (value2 > value1) return 1;
-			}
-			else {
+			} else {
 				throw new Error('Case not implemented: ' + sortMode);
 			}
 
@@ -50,28 +47,46 @@ export default class CodeList extends React.Component {
 		};
 
 		const sortByOverlapCount = (code1, code2) => {
-			const codingCount1 = _this.props.codingResult.getCodingOverlapCount(code1.codeID);
-			const codingCount2 = _this.props.codingResult.getCodingOverlapCount(code2.codeID);
-			
+			const codingCount1 = _this.props.codingResult.getCodingOverlapCount(
+				code1.codeID
+			);
+			const codingCount2 = _this.props.codingResult.getCodingOverlapCount(
+				code2.codeID
+			);
+
 			const result = sortByValue(codingCount1, codingCount2);
 
 			return result != 0 ? result : sortByName(code1, code2);
 		};
-		
-		const sortByAveragePercentageByMainCode = (code1, code2) => {
-			const averagePercentageCode1 = _this.props.codingResult.getAverageOverlapPercentageByMainCode(code1.codeID);
-			const averagePercentageCode2 = _this.props.codingResult.getAverageOverlapPercentageByMainCode(code2.codeID);
 
-			const result = sortByValue(averagePercentageCode1, averagePercentageCode2);
+		const sortByAveragePercentageByMainCode = (code1, code2) => {
+			const averagePercentageCode1 = _this.props.codingResult.getAverageOverlapPercentageByMainCode(
+				code1.codeID
+			);
+			const averagePercentageCode2 = _this.props.codingResult.getAverageOverlapPercentageByMainCode(
+				code2.codeID
+			);
+
+			const result = sortByValue(
+				averagePercentageCode1,
+				averagePercentageCode2
+			);
 
 			return result != 0 ? result : sortByName(code1, code2);
 		};
 
 		const sortByAveragePercentageByOtherCode = (code1, code2) => {
-			const averagePercentageCode1 = _this.props.codingResult.getAverageOverlapPercentageByOtherCode(code1.codeID);
-			const averagePercentageCode2 = _this.props.codingResult.getAverageOverlapPercentageByOtherCode(code2.codeID);
+			const averagePercentageCode1 = _this.props.codingResult.getAverageOverlapPercentageByOtherCode(
+				code1.codeID
+			);
+			const averagePercentageCode2 = _this.props.codingResult.getAverageOverlapPercentageByOtherCode(
+				code2.codeID
+			);
 
-			const result = sortByValue(averagePercentageCode1, averagePercentageCode2);
+			const result = sortByValue(
+				averagePercentageCode1,
+				averagePercentageCode2
+			);
 
 			return result != 0 ? result : sortByName(code1, code2);
 		};
@@ -121,18 +136,18 @@ export default class CodeList extends React.Component {
 		let codes = this.getCodeSystemArray();
 
 		// Filter main code
-		codes = codes.filter((code) => {
+		codes = codes.filter(code => {
 			return this.props.code.codeID != code.codeID;
 		});
 
 		return (
-			<Table 
-				items={codes} 
+			<Table
+				items={codes}
 				columns={[
-					TABLE_COLUMN_CODE, 
-					TABLE_COLUMN_OVERLAPS_MAIN, 
-					TABLE_COLUMN_OVERLAPS_OTHER, 
-					TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN, 
+					TABLE_COLUMN_CODE,
+					TABLE_COLUMN_OVERLAPS_MAIN,
+					TABLE_COLUMN_OVERLAPS_OTHER,
+					TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN,
 					TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER
 				]}
 				useAvailableWidth={true}
@@ -144,7 +159,7 @@ export default class CodeList extends React.Component {
 				cellSelected={this.cellSelected}
 				getSortFunction={this.getSortFunction}
 				renderHeaderCellContent={this.renderHeaderCellContent}
-				renderCellContent={this.renderCellContent} 
+				renderCellContent={this.renderCellContent}
 			/>
 		);
 	}
@@ -164,8 +179,8 @@ export default class CodeList extends React.Component {
 					<FormattedMessage
 						id="codeQueriesCodeListHeaderOverlapsBy"
 						defaultMessage="Overlaps by"
-					/>, 
-					<br/>, 
+					/>,
+					<br />,
 					this.props.code.name
 				];
 			}
@@ -174,8 +189,8 @@ export default class CodeList extends React.Component {
 					<FormattedMessage
 						id="codeQueriesCodeListHeaderOverlapsBy"
 						defaultMessage="Overlaps by"
-					/>, 
-					<br/>, 
+					/>,
+					<br />,
 					<FormattedMessage
 						id="codeQueriesCodeListHeaderOtherCode"
 						defaultMessage="other code"
@@ -187,8 +202,8 @@ export default class CodeList extends React.Component {
 					<FormattedMessage
 						id="codeQueriesCodeListHeaderOverlapPercentageBy"
 						defaultMessage="Overlap % by"
-					/>, 
-					<br/>, 
+					/>,
+					<br />,
 					this.props.code.name
 				];
 			}
@@ -198,7 +213,7 @@ export default class CodeList extends React.Component {
 						id="codeQueriesCodeListHeaderOverlapPercentageBy"
 						defaultMessage="Overlap % by"
 					/>,
-					 <br/>, 
+					<br />,
 					<FormattedMessage
 						id="codeQueriesCodeListHeaderOtherCode"
 						defaultMessage="other code"
@@ -217,18 +232,30 @@ export default class CodeList extends React.Component {
 				return code.name;
 			}
 			case TABLE_COLUMN_OVERLAPS_MAIN: {
-				return this.props.codingResult.getCodingOverlapCount(code.codeID) + ' / ' + this.props.codingResult.getTotalCodingsCountMainCode();
+				return (
+					this.props.codingResult.getCodingOverlapCount(code.codeID) +
+					' / ' +
+					this.props.codingResult.getTotalCodingsCountMainCode()
+				);
 			}
 			case TABLE_COLUMN_OVERLAPS_OTHER: {
-				return this.props.codingResult.getCodingOverlapCount(code.codeID) + ' / ' + this.props.codingResult.getTotalCodingsCount(code.codeID);
+				return (
+					this.props.codingResult.getCodingOverlapCount(code.codeID) +
+					' / ' +
+					this.props.codingResult.getTotalCodingsCount(code.codeID)
+				);
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN: {
-				const value = this.props.codingResult.getAverageOverlapPercentageByMainCode(code.codeID);
-				return (value > 0.0 ? (value * 100).toFixed(2) + ' %' : '-');
+				const value = this.props.codingResult.getAverageOverlapPercentageByMainCode(
+					code.codeID
+				);
+				return value > 0.0 ? (value * 100).toFixed(2) + ' %' : '-';
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER: {
-				const value = this.props.codingResult.getAverageOverlapPercentageByOtherCode(code.codeID);
-				return (value > 0.0 ? (value * 100).toFixed(2) + ' %' : '-');
+				const value = this.props.codingResult.getAverageOverlapPercentageByOtherCode(
+					code.codeID
+				);
+				return value > 0.0 ? (value * 100).toFixed(2) + ' %' : '-';
 			}
 			default: {
 				throw new Error('Missing case in switch statement: ' + column);

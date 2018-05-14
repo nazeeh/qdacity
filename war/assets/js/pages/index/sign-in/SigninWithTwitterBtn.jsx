@@ -21,7 +21,7 @@ export default class SigninWithTwitterBtn extends React.Component {
 	}
 
 	onSignedIn() {
-		if(!this.props.onSignedIn) {
+		if (!this.props.onSignedIn) {
 			console.error('No onSignedIn method given in SigninWithTwitterBtn.');
 			return;
 		}
@@ -115,45 +115,48 @@ export default class SigninWithTwitterBtn extends React.Component {
 		});
 
 		const _this = this;
-		this.authenticationProvider.signInWithTwitter().then(function(twitterProfile) {
-			_this.onSignedIn();
-		}, function(twitterProfileOrError) {
-
-			if(twitterProfileOrError.error) {
-				// on twitter error
-				_this.setState({
-					loading: false
-				})
-				return;
-			}
-
-			var decider = new BinaryDecider(
-				formatMessage({
-					id: 'signinwithtwitterbtn.register_prompt',
-					defaultMessage:
-						'Your account does not seem to be registered with QDAcity.'
-				}),
-				formatMessage({
-					id: 'signinwithtwitterbtn.use_different',
-					defaultMessage: 'Use Different Account'
-				}),
-				formatMessage({
-					id: 'signinwithtwitterbtn.register_account',
-					defaultMessage: 'Register Account'
-				})
-			);
-			decider.showModal().then(function(value) {
-				if (value == 'optionA') {
-					_this.signIn();
-				} else  {
-					_this.registerAccount(twitterProfileOrError);
+		this.authenticationProvider.signInWithTwitter().then(
+			function(twitterProfile) {
+				_this.onSignedIn();
+			},
+			function(twitterProfileOrError) {
+				if (twitterProfileOrError.error) {
+					// on twitter error
+					_this.setState({
+						loading: false
+					});
+					return;
 				}
-			});
-		});
+
+				var decider = new BinaryDecider(
+					formatMessage({
+						id: 'signinwithtwitterbtn.register_prompt',
+						defaultMessage:
+							'Your account does not seem to be registered with QDAcity.'
+					}),
+					formatMessage({
+						id: 'signinwithtwitterbtn.use_different',
+						defaultMessage: 'Use Different Account'
+					}),
+					formatMessage({
+						id: 'signinwithtwitterbtn.register_account',
+						defaultMessage: 'Register Account'
+					})
+				);
+				decider.showModal().then(function(value) {
+					if (value == 'optionA') {
+						_this.signIn();
+					} else {
+						_this.registerAccount(twitterProfileOrError);
+					}
+				});
+			}
+		);
 	}
 
 	render() {
-		if (this.state.loading) return <ReactLoading color={(props) => props.theme.defaultText} />;
+		if (this.state.loading)
+			return <ReactLoading color={props => props.theme.defaultText} />;
 		return (
 			<BtnLg href="#" onClick={() => this.signIn()}>
 				<a>

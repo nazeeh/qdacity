@@ -62,9 +62,13 @@ export default class ExercisePage extends React.Component {
 		const user = await this.userPromise;
 		const exercise = await this.getExerciseByIDPromise;
 
-		const parentTermCourse = await CourseEndpoint.getTermCourse(exercise.termCourseID);
-		const parentCourse = await CourseEndpoint.getCourse(parentTermCourse.courseID);
-		
+		const parentTermCourse = await CourseEndpoint.getTermCourse(
+			exercise.termCourseID
+		);
+		const parentCourse = await CourseEndpoint.getCourse(
+			parentTermCourse.courseID
+		);
+
 		const isTermCourseOwner = this.props.auth.authorization.isTermCourseOwner(
 			user,
 			parentTermCourse,
@@ -109,15 +113,18 @@ export default class ExercisePage extends React.Component {
 	}
 
 	render() {
-		if (
-			!this.props.auth.authState.isUserSignedIn
-		) {
-			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
+		if (!this.props.auth.authState.isUserSignedIn) {
+			return (
+				<UnauthenticatedUserPanel
+					history={this.props.history}
+					auth={this.props.auth}
+				/>
+			);
 		}
 
 		this.init();
-		if(this.state.exercise == undefined || this.state.exercise == null) return null;
-
+		if (this.state.exercise == undefined || this.state.exercise == null)
+			return null;
 
 		return (
 			<StyledDashboard>

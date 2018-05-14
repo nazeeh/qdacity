@@ -1,14 +1,13 @@
 //@ts-check
 import jwt_decode from 'jwt-decode';
 
-const STORAGE_QDACITY_JWT_TOKEN_KEY = 'qdacity-jwt-token';
-const TOKEN_TIMEOUT = 30; //min
+import AuthenticationEndpoint from '../endpoints/AuthenticationEndpoint.js';
 
+const STORAGE_QDACITY_JWT_TOKEN_KEY = 'qdacity-jwt-token';
+const TOKEN_REFRESH_INTERVAL = 30; //min
 
 export default class QdacityTokenAuthenticationProvider {
-
 	constructor() {
-	
 		this.callbackFunctions = [];
 		this.jwtToken = null;
 	}
@@ -20,7 +19,7 @@ export default class QdacityTokenAuthenticationProvider {
 	getProfile() {
 		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
-			if(_this.jwtToken === undefined || _this.jwtToken === null) {
+			if (_this.jwtToken === undefined || _this.jwtToken === null) {
 				resolve({
 					qdacityId: '',
 					name: '',
@@ -53,7 +52,7 @@ export default class QdacityTokenAuthenticationProvider {
 
 	/**
 	 * Generates a thumbnail image with blue background and the letter written in white.
-	 * @param {String} name 
+	 * @param {String} name
 	 * @returns {String} data url
 	 */
 	generateThumbnailBase64(name) {
@@ -62,7 +61,7 @@ export default class QdacityTokenAuthenticationProvider {
 		canvas.width = 200;
 		canvas.height = 200;
 
-		const colors = ["Red", "Blue", "DarkCyan", "DarkGreen", "Sienna"];
+		const colors = ['Red', 'Blue', 'DarkCyan', 'DarkGreen', 'Sienna'];
 		const asciiLastChar = name.charCodeAt(name.length - 1);
 		const fillStyleColor = colors[asciiLastChar % colors.length];
 
@@ -71,10 +70,10 @@ export default class QdacityTokenAuthenticationProvider {
 		context.fillRect(0, 0, canvas.width, canvas.height);
 
 		// letter
-		context.fillStyle = "white";
-		context.font = "130px Arial";
-		context.textAlign = "center";
-		context.fillText(name.charAt(0), canvas.width / 2, canvas.height/2 + 40);
+		context.fillStyle = 'white';
+		context.font = '130px Arial';
+		context.textAlign = 'center';
+		context.fillText(name.charAt(0), canvas.width / 2, canvas.height / 2 + 40);
 
 		return canvas.toDataURL();
 	}
@@ -84,11 +83,15 @@ export default class QdacityTokenAuthenticationProvider {
 	 * @return {boolean}
 	 */
 	isSignedIn() {
-		if(this.jwtToken === undefined || this.jwtToken === null) {
+		if (this.jwtToken === undefined || this.jwtToken === null) {
 			this.loadTokenFromStorage();
 		}
 		this.refreshTokenIfNeccessary();
-		return this.jwtToken !== undefined && this.jwtToken !== null && !this.isTokenExpired(this.jwtToken);
+		return (
+			this.jwtToken !== undefined &&
+			this.jwtToken !== null &&
+			!this.isTokenExpired(this.jwtToken)
+		);
 	}
 
 	/**
@@ -97,16 +100,16 @@ export default class QdacityTokenAuthenticationProvider {
 	 */
 	loadTokenFromStorage() {
 		const storedToken = localStorage.getItem(STORAGE_QDACITY_JWT_TOKEN_KEY);
-		if(storedToken === undefined || storedToken === null) {
+		if (storedToken === undefined || storedToken === null) {
 			this.jwtToken = null;
 			return;
 		}
 
-		if(!this.isTokenExpired(storedToken)) {
+		if (!this.isTokenExpired(storedToken)) {
 			this.jwtToken = storedToken;
 		}
 
-		if(this.jwtToken !== undefined && this.jwtToken !== null) {
+		if (this.jwtToken !== undefined && this.jwtToken !== null) {
 			this.authStateChaned();
 		}
 	}
@@ -131,17 +134,17 @@ export default class QdacityTokenAuthenticationProvider {
 	 * @returns the token
 	 */
 	getToken() {
-		if(this.jwtToken == undefined || this.jwtToken == null) {
+		if (this.jwtToken == undefined || this.jwtToken == null) {
 			this.loadTokenFromStorage();
 		}
 		this.refreshTokenIfNeccessary();
 		return !this.isTokenExpired(this.jwtToken) ? this.jwtToken : null;
-    }
-    
-    setToken(token) {
-        this.jwtToken = token;
-        localStorage.setItem(STORAGE_QDACITY_JWT_TOKEN_KEY, token);
-    }
+	}
+
+	setToken(token) {
+		this.jwtToken = token;
+		localStorage.setItem(STORAGE_QDACITY_JWT_TOKEN_KEY, token);
+	}
 
 	/**
 	 * Always calls the given callback if the auth state changes.
@@ -153,7 +156,7 @@ export default class QdacityTokenAuthenticationProvider {
 	}
 
 	authStateChaned() {
-		for(const callback of this.callbackFunctions) {
+		for (const callback of this.callbackFunctions) {
 			callback();
 		}
 	}
@@ -162,24 +165,25 @@ export default class QdacityTokenAuthenticationProvider {
 	 * Refreshes the token if it is close to timing out.
 	 */
 	refreshTokenIfNeccessary() {
-		if(this.jwtToken == undefined || this.jwtToken == null) {
+		if (this.jwtToken == undefined || this.jwtToken == null) {
 			return;
 		}
-		
+
 		const decoded = jwt_decode(this.jwtToken);
 
 		const now = new Date();
-		const compareDate = new Date(now.getTime() + TOKEN_TIMEOUT * 60000); // adding minutes
-		const expiresAt = new Date(decoded.exp  * 1000); // get the right date format
+		const compareDate = new Date(
+			now.getTime() + TOKEN_REFRESH_INTERVAL * 60000
+		); // adding minutes
+		const expiresAt = new Date(decoded.exp * 1000); // get the right date format
 
-		if(expiresAt.getTime() < compareDate.getTime()) {
+		if (expiresAt.getTime() < compareDate.getTime()) {
 			// refresh neccessary
-			this.forceTokenRefresh()
-				.catch((e) => console.log(e))
+			this.forceTokenRefresh().catch(e => console.log(e));
 		}
 	}
 
-	/** 
+	/**
 	 * Forces a token refresh
 	 * @returns {Promise}
 	 */
@@ -187,33 +191,30 @@ export default class QdacityTokenAuthenticationProvider {
 		const _this = this;
 
 		const promise = new Promise(function(resolve, reject) {
-
-			gapi.client.qdacity.authentication.refreshToken({
-				token: _this.jwtToken
-			}).execute(function(resp) {
-				if (!resp.code) {
+			AuthenticationEndpoint.refreshToken(_this.jwtToken)
+				.then(function(resp) {
 					_this.setToken(resp.value);
 					console.log('Refreshed token!');
 					_this.authStateChaned();
 					resolve();
-				} else {
+				})
+				.catch(function(resp) {
 					reject('Refreshing the token failed!');
-				}
-			});
+				});
 		});
 		return promise;
 	}
 
 	/**
 	 * Checkis if the token is already expired.
-	 * @param {String} token 
+	 * @param {String} token
 	 */
 	isTokenExpired(token) {
 		const decoded = jwt_decode(token);
 
 		const now = new Date();
-		const expiresAt = new Date(decoded.exp  * 1000); // get the right date format
-		
-		return (expiresAt.getTime() < now.getTime());
+		const expiresAt = new Date(decoded.exp * 1000); // get the right date format
+
+		return expiresAt.getTime() < now.getTime();
 	}
 }

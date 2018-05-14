@@ -9,6 +9,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.utils.SystemProperty;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -21,7 +22,6 @@ import com.qdacity.user.EmailPasswordLogin;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserLoginProviderInformation;
-import com.uwyn.jhighlight.fastutil.Hash;
 import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
@@ -30,6 +30,8 @@ import javax.jdo.Transaction;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -59,7 +61,8 @@ public class AuthenticationEndpoint {
 
     /**
      * Registers a new user.
-     * This means adds the user to the database and adds an Email+Pwd LoginProvider Information
+     * Still has to be confirmed @see confirmEmailRegistration.
+     * In development environment, no confirmation is required!
      * @param email
      * @param givenName
      * @param surName
@@ -67,7 +70,7 @@ public class AuthenticationEndpoint {
      * @param loggedInUser
      */
     @ApiMethod(name = "authentication.email.register")
-    public User registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
+    public void registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
                                       @Named("givenName") String givenName, @Named("surName") String surName,
                                       com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         Pattern emailPattern = Pattern.compile(EMAIL_REGEX);
@@ -79,6 +82,73 @@ public class AuthenticationEndpoint {
 
         HashUtil hashUtil = new HashUtil();
         String pwdHash = hashUtil.hash(pwd);
+        String confirmationCode = generateLoginVerificationSecret();
+
+        UnconfirmedEmailPasswordLogin unconfirmedLogin = null;
+        PersistenceManager pm = getPersistenceManager();
+        try {
+            unconfirmedLogin = new UnconfirmedEmailPasswordLogin(email, pwdHash, givenName, surName, confirmationCode);
+            unconfirmedLogin = pm.makePersistent(unconfirmedLogin); // confirmed = false
+        } finally {
+            pm.close();
+        }
+
+        if (SystemProperty.environment.value().equals(SystemProperty.Environment.Value.Development)) {
+            // in dev environmanet, there is no confirmation step (for acceptance tests)
+            Logger.getLogger("logger").log(Level.INFO, "Register with Email and Password will do confirmation automatically because Dev Environment!");
+            this.confirmEmailRegistration(unconfirmedLogin.getConfirmationCode(), loggedInUser);
+        } else {
+            // send registration email
+            EmailPasswordRegistrationEmailSender task = new EmailPasswordRegistrationEmailSender(unconfirmedLogin);
+            Queue queue = QueueFactory.getDefaultQueue();
+            queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+        }
+    }
+
+    private String generateLoginVerificationSecret() {
+        while(true) {
+            String uuid = UUID.randomUUID().toString();
+            if(this.fetchUnconfirmedEmailPasswordLoginBySecret(uuid).size() == 0) {
+                return uuid;
+            }
+        }
+    }
+
+    private List<UnconfirmedEmailPasswordLogin> fetchUnconfirmedEmailPasswordLoginBySecret(String confirmationCode) {
+        PersistenceManager mgr = null;
+        try {
+            mgr = getPersistenceManager();
+            javax.jdo.Query q = mgr.newQuery(UnconfirmedEmailPasswordLogin.class);
+            q.setFilter("confirmationCode == confirmationCodeParam");
+            q.declareParameters("String confirmationCodeParam");
+            return (List<UnconfirmedEmailPasswordLogin>) q.execute(confirmationCode);
+        } finally {
+            mgr.close();
+        }
+    }
+
+    /**
+     * Inserts new user after successful confirmation.
+     * @param confirmationCode
+     * @param loggedInUser
+     * @return
+     * @throws UnauthorizedException
+     * @throws BadRequestException
+     */
+    @ApiMethod(name = "authentication.email.confirmRegistration")
+    public User confirmEmailRegistration(@Named("confirmationCode") String confirmationCode,
+                                         com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        // get the stored EmailPasswordLogin
+        List<UnconfirmedEmailPasswordLogin> unconfirmedEmailPasswordLoginList = fetchUnconfirmedEmailPasswordLoginBySecret(confirmationCode);
+        if(unconfirmedEmailPasswordLoginList.size() == 0) {
+            throw new BadRequestException("This Email is not waiting for confirmation!");
+        }
+        UnconfirmedEmailPasswordLogin unconfirmedEmailPasswordLogin = unconfirmedEmailPasswordLoginList.get(0);
+
+        if(unconfirmedEmailPasswordLogin.isConfirmed()) {
+            throw new BadRequestException("This Email is already confirmed!");
+        }
+        String email = unconfirmedEmailPasswordLogin.getEmail();
 
         // the id is also the email adress
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
@@ -86,16 +156,20 @@ public class AuthenticationEndpoint {
         UserEndpoint userEndpoint = new UserEndpoint();
         User user = new User();
         user.setEmail(email);
-        user.setGivenName(givenName);
-        user.setSurName(surName);
+        user.setGivenName(unconfirmedEmailPasswordLogin.getGivenName());
+        user.setSurName(unconfirmedEmailPasswordLogin.getSurName());
         User insertedUser = userEndpoint.insertUser(user, authenticatedUser);
 
         PersistenceManager pm = getPersistenceManager();
         try {
-            pm.makePersistent(new EmailPasswordLogin(email, pwdHash));
+            unconfirmedEmailPasswordLogin = pm.getObjectById(UnconfirmedEmailPasswordLogin.class, email); // cannot delete transient -> fetch 2nd time
+            String password = unconfirmedEmailPasswordLogin.getHashedPwd();
+            pm.deletePersistent(unconfirmedEmailPasswordLogin);
+            pm.makePersistent(new EmailPasswordLogin(email, password));
         } finally {
             pm.close();
         }
+
         return insertedUser;
     }
 
@@ -171,7 +245,7 @@ public class AuthenticationEndpoint {
 
         AuthenticatedUser authUser = facebookTokenValidator.validate(authNetworkToken);
         if(authUser == null) {
-            throw new UnauthorizedException("Code3.1: The Google token does not seem to be valid!");
+            throw new UnauthorizedException("Code3.1: The Facebook token does not seem to be valid!");
         }
         User user = new User();
         user.setEmail(email);
@@ -198,7 +272,7 @@ public class AuthenticationEndpoint {
         return new UserEndpoint().insertUser(user, authUser);
     }
 
-    @ApiMethod(name = "authentication.google.getToken", path = "uthentication.google.getToken")
+    @ApiMethod(name = "authentication.google.getToken", path = "authentication.google.getToken")
     public StringWrapper getTokenGoogle(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 
         AuthenticatedUser authUser = googleTokenValidator.validate(authNetworkToken);
@@ -222,7 +296,7 @@ public class AuthenticationEndpoint {
 
         AuthenticatedUser authUser = facebookTokenValidator.validate(authNetworkToken);
         if(authUser == null) {
-            throw new UnauthorizedException("Code4.2: The Twitter token does not seem to be valid!");
+            throw new UnauthorizedException("Code4.2: The Facebook token does not seem to be valid!");
         }
 
         // check if user is registered
@@ -292,13 +366,18 @@ public class AuthenticationEndpoint {
     private void assertEmailIsAvailable(String email) throws UnauthorizedException {
         PersistenceManager pm = getPersistenceManager();
         try {
-            // EmailPasswordLoginProviderInformation has externalUserId = email
             Object loginInfo = pm.getObjectById(EmailPasswordLogin.class, email);
-
             throw new UnauthorizedException("Code2.1: The Email is already in use!");
         } catch(JDOObjectNotFoundException ex) {
             // intended!
-        }finally {
+
+            try {
+                Object loginInfo = pm.getObjectById(UnconfirmedEmailPasswordLogin.class, email);
+                throw new UnauthorizedException("Code2.1: The Email is already in use, but still unconfirmed!");
+            } catch(JDOObjectNotFoundException ex2) {
+                // intended!
+            }
+        } finally {
             pm.close();
         }
     }

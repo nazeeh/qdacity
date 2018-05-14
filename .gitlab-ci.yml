@@ -15,6 +15,7 @@ image: java:7
 after_script:
     - rm -f /tmp/$CI_PIPELINE_ID.json
     - rm -r -f ./war/node_modules/
+    - rm -r -f ./localization/node_modules/
 
 stages:
   - build
@@ -29,14 +30,18 @@ stages:
     paths:
       - target/qdacity-war/dist/
       - target/qdacity-war/*.jsp
-      - target/qdacity-war/sw.js
+      - target/qdacity-war/dist/js/styles.css
+      - target/qdacity-war/sw.dist.js
       - war/translations/template.txt
       - war/dist/messages/
       - war/dist/js/index.dist.js
+      - war/dist/js/service-worker/
     expire_in: 3 mos
 
 frontend_prod_build:
-  <<: *job_definition
+  tags:
+    - qdacity-ramdisk
+  environment: Production
   <<: *frontend_build
   script:
     - build_babel_plugin
@@ -136,7 +141,9 @@ frontend_prod_translation_tests:
   allow_failure: true
 
 acceptance_tests:
-  <<: *job_definition
+  tags:
+    - qdacity-tests
+  environment: Production
   stage: test
   only:
     - branches 
@@ -146,6 +153,10 @@ acceptance_tests:
     - realtime-service/node_modules/
   script:
     - ./executeAcceptanceTestsJob.sh
+  after_script:
+    - rm -r -f ./war/node_modules/
+    - rm -r -f ./localization/node_modules/
+    - rm -r -f ./target/
   artifacts:
     paths:
       - logs
