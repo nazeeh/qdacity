@@ -119,6 +119,50 @@ public class ExerciseEndpoint {
 	}
 
     /**
+     * This inserts a new entity into App Engine datastore. If the entity already
+     * exists in the datastore, an exception is thrown.
+     * It uses HTTP POST method.
+     *
+     * @param exercise the entity to be inserted.
+     * @return The inserted entity.
+     * @throws UnauthorizedException
+     */
+    @ApiMethod(name = "exercise.createAndInsertExerciseToExerciseGroup")
+    public Exercise createAndInsertExerciseToExerciseGroup(Exercise exercise, Long ExerciseGroupID, User user) throws UnauthorizedException {
+        exercise.setSnapshotsAlreadyCreated(false);
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            if (exercise.getId() != null) {
+                if (containsExercise(exercise)) {
+                    throw new EntityExistsException("Exercise already exists");
+                }
+            }
+
+            try {
+                TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+                Authorization.checkAuthorizationTermCourse(termCourse, user);
+                mgr.makePersistent(exercise);
+            }
+            catch (javax.jdo.JDOObjectNotFoundException ex) {
+                throw new javax.jdo.JDOObjectNotFoundException("The corresponding term course was not found");
+            }
+
+            try {
+                ExerciseGroup exerciseGroup = mgr.getObjectById(ExerciseGroup.class, ExerciseGroupID);
+                exerciseGroup.addExercise(exercise.getId().toString());
+                mgr.makePersistent(exerciseGroup);
+            }
+            catch (javax.jdo.JDOObjectNotFoundException ex) {
+                throw new javax.jdo.JDOObjectNotFoundException("The corresponding exercise group was not found");
+            }
+
+        } finally {
+            mgr.close();
+        }
+        return exercise;
+    }
+
+    /**
      * This inserts a new exercise into App Engine datastore. If the entity already
      * exists in the datastore, an exception is thrown.
      * It uses HTTP POST method.
@@ -166,6 +210,7 @@ public class ExerciseEndpoint {
         }
         return exerciseGroup;
     }
+
 
 	/**
 	 * This method lists all the exercises which belong to a specific term course

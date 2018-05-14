@@ -40,6 +40,20 @@ public class ExerciseEndpointTestHelper {
 		}
 	}
 
+	static public void createAndInsertExerciseToExerciseGroup(Long id, Long termCourseID, String name, Date deadline, Long exerciseGroupID, com.google.api.server.spi.auth.common.User loggedInUser) {
+		Exercise exercise = new Exercise();
+		exercise.setId(id);
+		exercise.setName(name);
+		exercise.setTermCourseID(termCourseID);
+		exercise.setExerciseDeadline(deadline);
+		ExerciseEndpoint ee = new ExerciseEndpoint();
+		try {
+			ee.createAndInsertExerciseToExerciseGroup(exercise, exerciseGroupID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for exercise creation");
+		}
+	}
     static public void insertExerciseGroup(Long id, Long termCourseID, String name, com.google.api.server.spi.auth.common.User loggedInUser) {
         ExerciseGroup exerciseGroup = new ExerciseGroup();
         exerciseGroup.setId(id);
