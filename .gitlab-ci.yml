@@ -158,6 +158,7 @@ acceptance_tests:
     - rm -r -f ./localization/node_modules/
     - rm -r -f ./target/
   artifacts:
+    when: always
     paths:
       - logs
     expire_in: 6 mos
