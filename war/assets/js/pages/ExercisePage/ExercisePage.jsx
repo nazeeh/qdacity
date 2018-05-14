@@ -59,7 +59,6 @@ export default class ExercisePage extends React.Component {
 	}
 
 	async setExerciseInfo() {
-		const user = await this.userPromise;
 		const exercise = await this.getExerciseByIDPromise;
 
 		const parentTermCourse = await CourseEndpoint.getTermCourse(
@@ -68,6 +67,9 @@ export default class ExercisePage extends React.Component {
 		const parentCourse = await CourseEndpoint.getCourse(
 			parentTermCourse.courseID
 		);
+		
+		const user = await this.userPromise;
+
 
 		const isTermCourseOwner = this.props.auth.authorization.isTermCourseOwner(
 			user,
