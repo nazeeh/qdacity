@@ -27,9 +27,7 @@ import io.jsonwebtoken.Claims;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -576,28 +574,30 @@ public class AuthenticationEndpoint {
         PersistenceManager mgr = getPersistenceManager();
         Transaction transaction = mgr.currentTransaction();
         try {
-            transaction.begin(); // transaction in order to update dependent relation
+            transaction.begin(); // remove associated login from user and delete UserLoginProviderInformation manually (workaround)
             mgr.makePersistent(user);
 
-            // Set filter for UserLoginProviderInformation
-            Query.Filter externalUserIdFilter = new Query.FilterPredicate("externalUserId", Query.FilterOperator.EQUAL, associatedLogin.getExternalUserId());
-            Query.Filter providerFilter = new Query.FilterPredicate("provider", Query.FilterOperator.EQUAL, associatedLogin.getProvider().toString());
-            Query.Filter filter = new Query.CompositeFilter(Query.CompositeFilterOperator.AND,
-                    Arrays.asList(externalUserIdFilter, providerFilter));
-            com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
-                    "UserLoginProviderInformation").setFilter(filter);
-            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            PreparedQuery pq = datastore.prepare(q);
-            Entity providerInformationEntity = pq.asSingleEntity();
-            datastore.delete(providerInformationEntity.getKey());
+            javax.jdo.Query q = mgr.newQuery(UserLoginProviderInformation.class);
+            q.setFilter("this.externalUserId == :externalUserId && this.provider == :provider");
+            Map params = new HashMap();
+            params.put("externalUserId", associatedLogin.getExternalUserId());
+            params.put("provider", associatedLogin.getProvider().toString());
+            List<UserLoginProviderInformation> loginInfos = (List<UserLoginProviderInformation>) q.executeWithMap(params);
 
-            transaction.commit();
+            if(loginInfos.size() == 0) {
+                throw new IllegalStateException("Did not find UserLoginProviderInformation to delete! Performing rollback.");
+            } else if (loginInfos.size() > 1) {
+                throw new IllegalStateException("UserLoginProviderInformation was not destinct for deletion! Performing rollback.");
+            }
+
+            mgr.deletePersistent(mgr.getObjectById(UserLoginProviderInformation.class, loginInfos.get(0).getKey())); // use persistence manager for transaction
 
             if(associatedLogin.getProvider().equals(LoginProviderType.EMAIL_PASSWORD)) {
                 EmailPasswordLogin emailPwd = mgr.getObjectById(EmailPasswordLogin.class, associatedLogin.getExternalEmail());
                 mgr.deletePersistent(emailPwd);
             }
 
+            transaction.commit();
 
             Cache.cache(user.getId(), User.class, user);
             Cache.invalidatUserLogins(user); // make sure the associatedLogin is not chached any more.
@@ -633,7 +633,7 @@ public class AuthenticationEndpoint {
      */
     private void assertAssociationPreconditions(AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
         if(unAssociatedUser == null) {
-            throw new UnauthorizedException("Code4.1: The Google token does not seem to be valid!");
+            throw new UnauthorizedException("Code4.1: The token does not seem to be valid!");
         }
         User user = null;
 
