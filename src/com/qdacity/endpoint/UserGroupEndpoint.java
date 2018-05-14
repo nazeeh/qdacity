@@ -203,6 +203,38 @@ public class UserGroupEndpoint {
     }
 
     /**
+     * Adds the user with the given userEmail to the participants list.
+     * Updates the bidirectional relation to user.
+     * Only admins and course owner can trigger this endpoint.
+     * @param userEmail
+     * @param groupId
+     * @param loggedInUser
+     * @throws UnauthorizedException
+     */
+    @ApiMethod(name = "usergroup.addParticipantByEmail")
+    public void addParticipantByEmail(@Named("userEmail") String userEmail, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        String userID = null;
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            // Get the invited user
+            Query q = mgr.newQuery(com.qdacity.user.User.class, "email == '" + userEmail + "'");
+            @SuppressWarnings("unchecked")
+            List<com.qdacity.user.User> dbUsers = (List<com.qdacity.user.User>) q.execute();
+
+            if(dbUsers.size() == 0) {
+                throw new BadRequestException("User with email " + userEmail + " not found!");
+            }
+            userID = dbUsers.get(0).getId();
+        } finally {
+            mgr.close();
+        }
+
+        this.addParticipant(userID, groupId, loggedInUser);
+    }
+
+
+    /**
      * Removes the given user from the given group (owner and participant).
      * Updates the bidirectional relation to user.
      * Only admins and course owner can trigger this endpoint to remove other users.

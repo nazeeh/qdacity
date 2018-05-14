@@ -168,6 +168,29 @@ public class UserGroupEndpointTest {
     }
 
     @Test
+    public void testAddParticipantByEmail() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authGroupOwner = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User groupOwner = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authGroupOwner);
+
+        AuthenticatedUser authParticipant = new AuthenticatedUser("11", "test2@googleuser.de", LoginProviderType.GOOGLE);
+        User participant = UserEndpointTestHelper.addUser("test2@user.de", "test2", "participant", authParticipant);
+        assertEquals(0, participant.getUserGroups().size());
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authGroupOwner);
+        assertEquals(0, group1.getParticipants().size());
+
+        new UserGroupEndpoint().addParticipantByEmail(participant.getEmail(), group1.getId(), authGroupOwner);
+
+        group1 = new UserGroupEndpoint().getUserGroupById(group1.getId(), authGroupOwner);
+        assertEquals(1, group1.getParticipants().size());
+        assertTrue(group1.getParticipants().contains(participant.getId()));
+
+        participant = new UserEndpoint().getCurrentUser(authParticipant);
+        assertEquals(1, participant.getUserGroups().size());
+        assertTrue(participant.getUserGroups().contains(group1.getId()));
+    }
+
+    @Test
     public void testAddParticipantUnauthorized() throws UnauthorizedException, BadRequestException {
         AuthenticatedUser authUser1 = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
         User user1 = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser1);
@@ -194,6 +217,21 @@ public class UserGroupEndpointTest {
         thrown.expect(UnauthorizedException.class);
         thrown.expectMessage("The user could not be authenticated");
         new UserGroupEndpoint().addParticipant(user1.getId(), group1.getId(), null);
+    }
+
+    @Test
+    public void testAddParticipantByEmailNotExists() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authGroupOwner = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User groupOwner = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authGroupOwner);
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authGroupOwner);
+        assertEquals(0, group1.getParticipants().size());
+
+        String testEmailNotExists = "not@exists.de";
+
+        thrown.expect(BadRequestException.class);
+        thrown.expectMessage("User with email " + testEmailNotExists + " not found!");
+        new UserGroupEndpoint().addParticipantByEmail(testEmailNotExists, group1.getId(), authGroupOwner);
     }
 
     @Test
