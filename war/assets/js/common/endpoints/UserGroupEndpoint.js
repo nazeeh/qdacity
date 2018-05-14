@@ -10,6 +10,14 @@ export default class UserGroupEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static updateName(groupId, name) {
+		var apiMethod = gapi.client.qdacity.usergroup.updateGroupName({
+			groupId: groupId,
+			name: name
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static listOwnedUserGroups(userId = null) {
 		var apiMethod = gapi.client.qdacity.usergroup.listOwnedUserGroups({
 			userId: userId

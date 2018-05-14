@@ -71,6 +71,16 @@ public class UserGroupEndpoint {
         return userGroup;
     }
 
+    /**
+     * Updates the UserGroup with the given id with the given name.
+     * @param groupId
+     * @param name
+     * @param loggedInUser
+     * @return
+     * @throws BadRequestException
+     * @throws UnauthorizedException
+     */
+    @ApiMethod(name = "usergroup.updateGroupName")
     public UserGroup updateUserGroupName(@Named("groupId") Long groupId, @Named("name") String name, com.google.api.server.spi.auth.common.User loggedInUser) throws BadRequestException, UnauthorizedException {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The user could not be authenticated");
