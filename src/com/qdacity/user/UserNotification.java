@@ -36,6 +36,9 @@ public class UserNotification {
 	
 	@Persistent
 	Long termCourseID;
+
+	@Persistent
+	Long userGroupId;
 	
 	@Persistent
 	String subject;
@@ -134,4 +137,19 @@ public class UserNotification {
 		this.settled = settled;
 	}
 
+	public Long getTermCourseID() {
+		return termCourseID;
+	}
+
+	public void setTermCourseID(Long termCourseID) {
+		this.termCourseID = termCourseID;
+	}
+
+	public Long getUserGroupId() {
+		return userGroupId;
+	}
+
+	public void setUserGroupId(Long userGroupId) {
+		this.userGroupId = userGroupId;
+	}
 }

@@ -557,7 +557,7 @@ public class CourseEndpoint {
 		}
 	}
 
-	@ApiMethod(name = "course.addParticipant")
+	@ApiMethod(name = "course.inviteParticipant")
 		public TermCourse addParticipant(@Named("id") Long termCourseID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 
 			com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered

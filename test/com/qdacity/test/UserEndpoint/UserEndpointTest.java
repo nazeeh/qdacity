@@ -15,7 +15,6 @@ import com.google.api.server.spi.response.BadRequestException;
 import com.google.appengine.api.datastore.Blob;
 import com.qdacity.endpoint.UserGroupEndpoint;
 import com.qdacity.endpoint.datastructures.BlobWrapper;
-import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.user.*;
 import org.junit.After;
 import org.junit.Assert;
@@ -314,7 +313,7 @@ public class UserEndpointTest {
 
 		UserGroup ownedUserGroup = new UserGroupEndpoint().insertUserGroup("testGroup", testUser);
 		UserGroup participatingUserGroup = new UserGroupEndpoint().insertUserGroup("testGroup2", loggedInUserA);
-		new UserGroupEndpoint().addParticipant(insertedTestUser.getId(), participatingUserGroup.getId(), loggedInUserA);
+		new UserGroupEndpoint().inviteParticipant(insertedTestUser.getId(), participatingUserGroup.getId(), loggedInUserA);
 
 		UserEndpoint ue = new UserEndpoint();
 		try {

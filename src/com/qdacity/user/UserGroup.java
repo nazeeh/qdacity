@@ -22,6 +22,9 @@ public class UserGroup implements Serializable {
     List<String> participants;
 
     @Persistent
+    List<String> invitedParticipants;
+
+    @Persistent
     List<Long> projects;
 
     @Persistent
@@ -79,5 +82,14 @@ public class UserGroup implements Serializable {
 
     public void setCourses(List<Long> courses) {
         this.courses = courses;
+    }
+
+    public List<String> getInvitedParticipants() {
+        if(invitedParticipants == null) invitedParticipants = new ArrayList<>();
+        return invitedParticipants;
+    }
+
+    public void setInvitedParticipants(List<String> invitedParticipants) {
+        this.invitedParticipants = invitedParticipants;
     }
 }

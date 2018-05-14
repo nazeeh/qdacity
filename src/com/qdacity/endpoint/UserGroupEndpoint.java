@@ -12,11 +12,14 @@ import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.user.User;
 import com.qdacity.user.UserGroup;
+import com.qdacity.user.UserNotification;
+import com.qdacity.user.UserNotificationType;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Api(
@@ -202,16 +205,15 @@ public class UserGroupEndpoint {
     }
 
     /**
-     * Adds the user with the given userId to the participants list.
-     * Updates the bidirectional relation to user.
+     * Invites the user with the given userId to the participants list.
      * Only admins and course owner can trigger this endpoint.
      * @param userId
      * @param groupId
      * @param loggedInUser
      * @throws UnauthorizedException
      */
-    @ApiMethod(name = "usergroup.addParticipant")
-    public void addParticipant(@Named("userId") String userId, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+    @ApiMethod(name = "usergroup.inviteParticipant")
+    public void inviteParticipant(@Named("userId") String userId, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The user could not be authenticated");
         }
@@ -219,17 +221,56 @@ public class UserGroupEndpoint {
         UserGroup userGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
 
         Authorization.checkAuthorization(userGroup, loggedInUser); // only owners and admins
+        User invitingUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
 
         PersistenceManager mgr = getPersistenceManager();
         try {
-            userGroup.getParticipants().add(participant.getId());
+            userGroup.getInvitedParticipants().add(participant.getId());
             mgr.makePersistent(userGroup);
             Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
 
-            participant.getUserGroups().add(userGroup.getId());
-            mgr.makePersistent(participant);
-            Cache.cache(participant.getId(), User.class, participant);
             Cache.invalidatUserLogins(participant); // for case that admin triggers
+
+            // Create notification
+            UserNotification notification = new UserNotification();
+            notification.setDatetime(new Date());
+            notification.setMessage("UserGroup: " + userGroup.getName());
+            notification.setSubject("Invitation by <b>" + invitingUser.getGivenName() + " " + invitingUser.getSurName() + "</b>");
+            notification.setOriginUser(invitingUser.getId());
+            notification.setUserGroupId(groupId);
+            notification.setSettled(false);
+            notification.setType(UserNotificationType.INVITATION);
+            notification.setUser(userId);
+
+            mgr.makePersistent(notification);
+        } finally {
+            mgr.close();
+        }
+    }
+
+    public void confirmParticipantInvitation(@Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("The user could not be authenticated");
+        }
+        User confirmingUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
+        UserGroup userGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
+
+        if(userGroup == null) throw new BadRequestException("The user group with id " + groupId + " was not found!");
+
+        // Authorization: only if invited
+        if(!userGroup.getInvitedParticipants().contains(confirmingUser.getId())) {
+            throw new BadRequestException("The user requesting user is not invited!");
+        }
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            userGroup.getParticipants().add(confirmingUser.getId());
+            mgr.makePersistent(userGroup);
+            Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
+
+            confirmingUser.getUserGroups().add(userGroup.getId());
+            mgr.makePersistent(confirmingUser);
+            Cache.cache(confirmingUser.getId(), User.class, confirmingUser);
         } finally {
             mgr.close();
         }
@@ -263,7 +304,7 @@ public class UserGroupEndpoint {
             mgr.close();
         }
 
-        this.addParticipant(userID, groupId, loggedInUser);
+        this.inviteParticipant(userID, groupId, loggedInUser);
     }
 
 
