@@ -332,14 +332,14 @@ export default class SigninFormula extends React.Component {
 	confirmEmail() {
 		console.log('Confirm email.');
 		const _this = this;
-		
+
 		const { formatMessage } = IntlProvider.intl;
 
 		const confirmationCodeLabel = formatMessage({
 			id: 'signin-formula.registeremailpwd.confirmation_code',
 			defaultMessage: 'Confirmation Code'
 		});
-		
+
 		vex.dialog.open({
 			message: formatMessage({
 				id: 'signin-formula.registeremailpwd.confirmationHeading',
@@ -421,7 +421,7 @@ export default class SigninFormula extends React.Component {
                                 <FormattedMessage
                                     id="signin-formula.email"
                                     defaultMessage="Email:"
-                                />	
+                                />
                             </FormulaHeading>
                         </div>
                         <div className="col-xs-12">
@@ -436,7 +436,7 @@ export default class SigninFormula extends React.Component {
                                 <FormattedMessage
                                     id="signin-formula.pwd"
                                     defaultMessage="Password:"
-                                />	
+                                />
                             </FormulaHeading>
                         </div>
                         <div className="col-xs-12">
@@ -445,15 +445,15 @@ export default class SigninFormula extends React.Component {
                             </FormulaInputWrapper>
                         </div>
                     </div>
-					
+
                     <Spacer/>
-					
+
                     <div className="row">
 						<FormulaLink onClick={() => this.forgotPassword()}><u>
 							<FormattedMessage
 								id="signin-formula.forgotpw"
 								defaultMessage="Forgot PW?"
-							/>	
+							/>
 						</u></FormulaLink>
 					</div>
 					<div className="row">
@@ -461,7 +461,7 @@ export default class SigninFormula extends React.Component {
 							<FormattedMessage
 								id="signin-formula-confirm-email-link"
 								defaultMessage="Confirm Email"
-							/>	
+							/>
 						</u></FormulaLink>
 					</div>
 					<div className="row">
@@ -469,7 +469,7 @@ export default class SigninFormula extends React.Component {
 							<FormattedMessage
 								id="signin-formula.register-email-pwd"
 								defaultMessage="Register now!"
-							/>	
+							/>
 						</u></FormulaLink>
                     </div>
                     <Spacer/>
@@ -517,6 +517,7 @@ export default class SigninFormula extends React.Component {
 							/>
 						</ButtonStyledWidh>
 					</div>
+					{/* Twitter Login Feature disabled - for now
 					<div className="row">
 						<ButtonStyledWidh>
 							<SigninWithTwitterBtn
@@ -525,6 +526,7 @@ export default class SigninFormula extends React.Component {
 							/>
 						</ButtonStyledWidh>
 					</div>
+					*/}
 				</div>
 			</div>
 		);
