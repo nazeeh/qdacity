@@ -114,10 +114,16 @@ export default class ExerciseList extends React.Component {
 		modal.showModal().then(function(data) {
 			if (data.ExtendsExercise) {
 				if (data.ExtendsExerciseOrGroup == 'Exercise') {
+					_this.createNewExerciseByExtendingExistingExercise(data.SelectedExerciseID, data.SelectedRevisionID);
 					console.log('extend exercise ' + data.SelectedExerciseID + " with project revision id: " + data.SelectedRevisionID);
 				}
 				else if (data.ExtendsExerciseOrGroup == 'ExerciseGroup') {
-					console.log('extend exercise group ' + data.SelectedExerciseGroupID+ " with project revision id: " + data.SelectedRevisionID);
+					_this.createNewExerciseAndAddtoGroup(
+					data.SelectedExerciseGroupID,
+					data.name,
+					data.exerciseType,
+					data.SelectedRevisionID,
+					data.SelectedDate);
 				}
 			}
 			else {
@@ -131,6 +137,27 @@ export default class ExerciseList extends React.Component {
 		});
 	}
 
+	createNewExerciseByExtendingExistingExercise() {
+	}
+
+	createNewExerciseAndAddtoGroup(exerciseGroupID, name, exerciseType, projectRevisionID, exerciseDeadline) {
+		var _this = this;
+		var exercise = {};
+		var termCourseID = this.props.termCourse.id;
+		var exercises = this.state.exercises;
+		exercise.name = name;
+		exercise.exerciseType = exerciseType;
+		exercise.projectRevisionID = projectRevisionID;
+		exercise.termCourseID = termCourseID;
+		exercise.exerciseDeadline = exerciseDeadline;
+		console.log(exercise);
+		ExerciseEndpoint.createAndInsertExerciseToExerciseGroup(exercise, exerciseGroupID).then(function(resp) {
+			exercises.push(resp);
+			_this.setState({
+				exercises: exercises
+			});
+		})
+	}
 	createNewExercise(name, exerciseType, projectRevisionID, exerciseDeadline) {
 		var _this = this;
 		var exercise = {};
