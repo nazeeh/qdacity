@@ -285,16 +285,15 @@ public class UserGroupEndpoint {
     }
 
     /**
-     * Adds the user with the given userEmail to the participants list.
-     * Updates the bidirectional relation to user.
+     * Invites the user with the given userEmail to the participants list.
      * Only admins and course owner can trigger this endpoint.
      * @param userEmail
      * @param groupId
      * @param loggedInUser
      * @throws UnauthorizedException
      */
-    @ApiMethod(name = "usergroup.addParticipantByEmail")
-    public void addParticipantByEmail(@Named("userEmail") String userEmail, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+    @ApiMethod(name = "usergroup.inviteParticipantByEmail")
+    public void inviteParticipantByEmail(@Named("userEmail") String userEmail, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         String userID = null;
 
         PersistenceManager mgr = getPersistenceManager();
@@ -367,13 +366,13 @@ public class UserGroupEndpoint {
     public CollectionResponse<User> getUsers(@Named("cursor") @Nullable String cursorString, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The user could not be authenticated");
-    }
+        }
 
-    User qdacityUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
-    UserGroup requestedGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
-        if(!requestedGroup.getParticipants().contains(qdacityUser.getId())) { // participants allowed
-        Authorization.checkAuthorization(requestedGroup, loggedInUser); // admin and owners allowed
-    }
+        User qdacityUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
+        UserGroup requestedGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
+            if(!requestedGroup.getParticipants().contains(qdacityUser.getId())) { // participants allowed
+            Authorization.checkAuthorization(requestedGroup, loggedInUser); // admin and owners allowed
+        }
 
         List<User> execute = null;
         PersistenceManager mgr = getPersistenceManager();

@@ -47,7 +47,7 @@ export default class UserGroupEndpoint {
 	}
 
 	static inviteParticipantByEmail(groupId, userEmail) {
-		var apiMethod = gapi.client.qdacity.usergroup.addParticipantByEmail({
+		var apiMethod = gapi.client.qdacity.usergroup.inviteParticipantByEmail({
 			groupId: groupId,
 			userEmail: userEmail
 		});
