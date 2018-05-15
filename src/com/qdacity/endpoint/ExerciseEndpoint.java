@@ -128,7 +128,7 @@ public class ExerciseEndpoint {
      * @throws UnauthorizedException
      */
     @ApiMethod(name = "exercise.createAndInsertExerciseToExerciseGroup")
-    public Exercise createAndInsertExerciseToExerciseGroup(Exercise exercise, Long ExerciseGroupID, User user) throws UnauthorizedException {
+    public Exercise createAndInsertExerciseToExerciseGroup(Exercise exercise, @Named("ExerciseGroupID") Long ExerciseGroupID, User user) throws UnauthorizedException {
         exercise.setSnapshotsAlreadyCreated(false);
         PersistenceManager mgr = getPersistenceManager();
         try {
