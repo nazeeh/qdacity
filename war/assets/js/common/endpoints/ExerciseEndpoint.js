@@ -64,8 +64,9 @@ export default class ExerciseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static insertExerciseGroupForNewExercise(existingExerciseID, ExerciseGroupName) {
+	static insertExerciseGroupForNewExercise(exercise, existingExerciseID, ExerciseGroupName) {
 		var apiMethod = gapi.client.qdacity.exercise.insertExerciseGroupForNewExercise({
+			newExercise: exercise,
 			existingExerciseID: existingExerciseID,
 			ExerciseGroupName: ExerciseGroupName
 		});
