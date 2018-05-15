@@ -20,9 +20,15 @@ describe(SPEC_NAME, function () {
     });
 
     beforeEach((done) => {
-    	this.driver = Common.setupChromeDriver();
+		const _this = this;
+		this.driver = Common.setupChromeDriver();
+		
 		this.driver.get('http://localhost:8888/PersonalDashboard').then(() => {
-			loginHelper.restoreLoginState(this.driver).then(done);
+			// switch to english version
+			_this.driver.executeScript('localStorage.setItem("language", "en-US")')
+				.then(() => {
+					loginHelper.restoreLoginState(this.driver).then(done);
+				});
 		});
 	}, Common.getDefaultTimeout());
 

@@ -13,6 +13,8 @@ import SigninWithTwitterBtn from './SigninWithTwitterBtn.jsx';
 import SigninWithFacebookBtn from './SigninWithFacebookBtn.jsx';
 import VexModal from '../../../common/modals/VexModal';
 
+import AuthenticationEndpoint from '../../../common/endpoints/AuthenticationEndpoint.js';
+
 const PanelDivisor = styled.div`
 	margin-top: 15px;
 	margin-bottom: 15px;
@@ -313,12 +315,82 @@ export default class SigninFormula extends React.Component {
 					return;
 				}
 
-				await _this.props.auth.authentication.signInWithEmailPassword(
-					data.email,
-					data.pwd
+				_this.confirmEmail();
+
+				return console.log(
+					'First',
+					data.firstName,
+					'Last Name',
+					data.lastName,
+					'Email',
+					data.email
 				);
-				await _this.props.auth.updateUserStatus();
-				_this.onSignedIn();
+			}
+		});
+	}
+
+	confirmEmail() {
+		console.log('Confirm email.');
+		const _this = this;
+
+		const { formatMessage } = IntlProvider.intl;
+
+		const confirmationCodeLabel = formatMessage({
+			id: 'signin-formula.registeremailpwd.confirmation_code',
+			defaultMessage: 'Confirmation Code'
+		});
+
+		vex.dialog.open({
+			message: formatMessage({
+				id: 'signin-formula.registeremailpwd.confirmationHeading',
+				defaultMessage: 'Enter the code you received with Email'
+			}),
+			input: [
+				`<label for="confirmationCode">${confirmationCodeLabel}</label><input name="confirmationCode" type="text" required />`,
+			].join('\n'),
+			buttons: [
+				$.extend({}, vex.dialog.buttons.YES, {
+					text: formatMessage({
+						id: 'signin-formula.registeremailpwd.confirm',
+						defaultMessage: 'Confirm'
+					})
+				}),
+				$.extend({}, vex.dialog.buttons.NO, {
+					text: formatMessage({
+						id: 'signin-formula.registeremailpwd.confirmCancel',
+						defaultMessage: 'Cancel'
+					})
+				})
+			],
+			callback: async function(data) {
+				if (data === false) {
+					return console.log('Cancelled');
+				}
+				let failureMessage = formatMessage({
+					id: 'signin-formula.registeremailpwd.confirm.success',
+					defaultMessage: 'Your Email was confirmed!'
+				});
+
+				try {
+					await AuthenticationEndpoint.confirmEmail(data.confirmationCode);
+				} catch(e) {
+
+					failureMessage = formatMessage({
+						id: 'signin-formula.registeremailpwd.confirm.failure',
+						defaultMessage: 'Could not confirm the Email. Please try again!'
+					});
+				}
+				vex.dialog.open({
+					message: failureMessage,
+					buttons: [
+						$.extend({}, vex.dialog.buttons.NO, {
+							text: formatMessage({
+								id: 'signin-formula.signin.failure.popup.close',
+								defaultMessage: 'Close'
+							})
+						})
+					],
+				});
 
 				return console.log(
 					'First',
@@ -335,101 +407,88 @@ export default class SigninFormula extends React.Component {
 	render() {
 		if (this.state.loading) return <ReactLoading />;
 		return (
-			<div>
-				<h3>
-					<FormattedMessage
-						id="signin-formula.title"
-						defaultMessage="Sign in now!"
-					/>
-				</h3>
-				<div id="email-pwd-signin">
-					<div className="row">
-						<div className="col-xs-12">
-							<FormulaHeading>
-								<FormattedMessage
-									id="signin-formula.email"
-									defaultMessage="Email:"
-								/>
-							</FormulaHeading>
-						</div>
-						<div className="col-xs-12">
-							<FormulaInputWrapper>
-								<StyledInput
-									id="signin-forumla-email"
-									onChange={event =>
-										(this.state.emailInput = event.target.value)
-									}
-								/>
-							</FormulaInputWrapper>
-						</div>
+            <div>
+                <h3>
+                    <FormattedMessage
+                        id="signin-formula.title"
+                        defaultMessage="Sign in now!"
+                    />
+                </h3>
+                <div id="email-pwd-signin">
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <FormulaHeading>
+                                <FormattedMessage
+                                    id="signin-formula.email"
+                                    defaultMessage="Email:"
+                                />
+                            </FormulaHeading>
+                        </div>
+                        <div className="col-xs-12">
+                            <FormulaInputWrapper>
+                                <StyledInput id="signin-forumla-email" onChange={(event) => this.state.emailInput = event.target.value}/>
+                            </FormulaInputWrapper>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <FormulaHeading>
+                                <FormattedMessage
+                                    id="signin-formula.pwd"
+                                    defaultMessage="Password:"
+                                />
+                            </FormulaHeading>
+                        </div>
+                        <div className="col-xs-12">
+                            <FormulaInputWrapper>
+                                <StyledInput id="signin-formula-password" type="password" onChange={(event) => this.state.passwordInput = event.target.value}/>
+                            </FormulaInputWrapper>
+                        </div>
+                    </div>
+
+                    <Spacer/>
+
+                    <div className="row">
+						<FormulaLink onClick={() => this.forgotPassword()}><u>
+							<FormattedMessage
+								id="signin-formula.forgotpw"
+								defaultMessage="Forgot PW?"
+							/>
+						</u></FormulaLink>
 					</div>
 					<div className="row">
-						<div className="col-xs-12">
-							<FormulaHeading>
-								<FormattedMessage
-									id="signin-formula.pwd"
-									defaultMessage="Password:"
-								/>
-							</FormulaHeading>
-						</div>
-						<div className="col-xs-12">
-							<FormulaInputWrapper>
-								<StyledInput
-									id="signin-formula-password"
-									type="password"
-									onChange={event =>
-										(this.state.passwordInput = event.target.value)
-									}
-								/>
-							</FormulaInputWrapper>
-						</div>
+						<FormulaLink id="signin-formula-confirm-email-link" href="#" onClick={() => this.confirmEmail()}><u>
+							<FormattedMessage
+								id="signin-formula-confirm-email-link"
+								defaultMessage="Confirm Email"
+							/>
+						</u></FormulaLink>
 					</div>
 					<div className="row">
-						<div className="col-xs-6">
-							<FormulaLink onClick={() => this.forgotPassword()}>
-								<u>
-									<FormattedMessage
-										id="signin-formula.forgotpw"
-										defaultMessage="Forgot PW?"
-									/>
-								</u>
-							</FormulaLink>
-						</div>
-						<div className="col-xs-6">
-							<FormulaLink
-								id="signin-formula-register-link"
-								href="#"
-								onClick={() => this.registerEmailPassword()}
-							>
-								<u>
-									<FormattedMessage
-										id="signin-formula.register-email-pwd"
-										defaultMessage="Register now!"
-									/>
-								</u>
-							</FormulaLink>
-						</div>
-					</div>
-					<Spacer />
-					<div className="row">
-						<ButtonStyledWidh>
-							<BtnLg
-								id="signin-formula-signin-btn"
-								onClick={() => this.signInWithEmailPassword()}
-							>
-								<a>
-									<i className="fa fa-sign-in fa-2x" />
-								</a>
-								<span>
-									<FormattedMessage
-										id="signin-formula.signin-email-pwd"
-										defaultMessage="Sign in"
-									/>
-								</span>
-							</BtnLg>
-						</ButtonStyledWidh>
-					</div>
-				</div>
+						<FormulaLink id="signin-formula-register-link" href="#" onClick={() => this.registerEmailPassword()}><u>
+							<FormattedMessage
+								id="signin-formula.register-email-pwd"
+								defaultMessage="Register now!"
+							/>
+						</u></FormulaLink>
+                    </div>
+                    <Spacer/>
+                    <div className="row">
+                        <ButtonStyledWidh>
+                            <BtnLg id="signin-formula-signin-btn" onClick={() => this.signInWithEmailPassword()}>
+                                <a>
+                                    <i className="fa fa-sign-in fa-2x" />
+                                </a>
+                                <span>
+                                    <FormattedMessage
+                                        id="signin-formula.signin-email-pwd"
+                                        defaultMessage="Sign in"
+                                    />
+                                </span>
+                            </BtnLg>
+                        </ButtonStyledWidh>
+                    </div>
+                </div>
 
 				<PanelDivisor />
 
@@ -458,6 +517,7 @@ export default class SigninFormula extends React.Component {
 							/>
 						</ButtonStyledWidh>
 					</div>
+					{/* Twitter Login Feature disabled - for now
 					<div className="row">
 						<ButtonStyledWidh>
 							<SigninWithTwitterBtn
@@ -466,6 +526,7 @@ export default class SigninFormula extends React.Component {
 							/>
 						</ButtonStyledWidh>
 					</div>
+					*/}
 				</div>
 			</div>
 		);

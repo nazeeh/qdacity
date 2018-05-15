@@ -72,6 +72,13 @@ export default class AuthenticationEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static confirmEmail(confirmationCode) {
+		var apiMethod = gapi.client.qdacity.authentication.email.confirmRegistration({
+			confirmationCode: confirmationCode
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static getTokenEmailPwd(email, password) {
 		var apiMethod = gapi.client.qdacity.authentication.email.getToken({
 			email: email,

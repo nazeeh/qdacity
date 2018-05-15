@@ -9,6 +9,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.utils.SystemProperty;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -21,15 +22,14 @@ import com.qdacity.user.EmailPasswordLogin;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserLoginProviderInformation;
-import com.uwyn.jhighlight.fastutil.Hash;
 import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -59,7 +59,8 @@ public class AuthenticationEndpoint {
 
     /**
      * Registers a new user.
-     * This means adds the user to the database and adds an Email+Pwd LoginProvider Information
+     * Still has to be confirmed @see confirmEmailRegistration.
+     * In development environment, no confirmation is required!
      * @param email
      * @param givenName
      * @param surName
@@ -67,7 +68,7 @@ public class AuthenticationEndpoint {
      * @param loggedInUser
      */
     @ApiMethod(name = "authentication.email.register")
-    public User registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
+    public void registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
                                       @Named("givenName") String givenName, @Named("surName") String surName,
                                       com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         Pattern emailPattern = Pattern.compile(EMAIL_REGEX);
@@ -79,6 +80,73 @@ public class AuthenticationEndpoint {
 
         HashUtil hashUtil = new HashUtil();
         String pwdHash = hashUtil.hash(pwd);
+        String confirmationCode = generateLoginVerificationSecret();
+
+        UnconfirmedEmailPasswordLogin unconfirmedLogin = null;
+        PersistenceManager pm = getPersistenceManager();
+        try {
+            unconfirmedLogin = new UnconfirmedEmailPasswordLogin(email, pwdHash, givenName, surName, confirmationCode);
+            unconfirmedLogin = pm.makePersistent(unconfirmedLogin); // confirmed = false
+        } finally {
+            pm.close();
+        }
+
+        if (SystemProperty.environment.value().equals(SystemProperty.Environment.Value.Development)) {
+            // in dev environmanet, there is no confirmation step (for acceptance tests)
+            Logger.getLogger("logger").log(Level.INFO, "Register with Email and Password will do confirmation automatically because Dev Environment!");
+            this.confirmEmailRegistration(unconfirmedLogin.getConfirmationCode(), loggedInUser);
+        } else {
+            // send registration email
+            EmailPasswordRegistrationEmailSender task = new EmailPasswordRegistrationEmailSender(unconfirmedLogin);
+            Queue queue = QueueFactory.getDefaultQueue();
+            queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+        }
+    }
+
+    private String generateLoginVerificationSecret() {
+        while(true) {
+            String uuid = UUID.randomUUID().toString();
+            if(this.fetchUnconfirmedEmailPasswordLoginBySecret(uuid).size() == 0) {
+                return uuid;
+            }
+        }
+    }
+
+    private List<UnconfirmedEmailPasswordLogin> fetchUnconfirmedEmailPasswordLoginBySecret(String confirmationCode) {
+        PersistenceManager mgr = null;
+        try {
+            mgr = getPersistenceManager();
+            javax.jdo.Query q = mgr.newQuery(UnconfirmedEmailPasswordLogin.class);
+            q.setFilter("confirmationCode == confirmationCodeParam");
+            q.declareParameters("String confirmationCodeParam");
+            return (List<UnconfirmedEmailPasswordLogin>) q.execute(confirmationCode);
+        } finally {
+            mgr.close();
+        }
+    }
+
+    /**
+     * Inserts new user after successful confirmation.
+     * @param confirmationCode
+     * @param loggedInUser
+     * @return
+     * @throws UnauthorizedException
+     * @throws BadRequestException
+     */
+    @ApiMethod(name = "authentication.email.confirmRegistration")
+    public User confirmEmailRegistration(@Named("confirmationCode") String confirmationCode,
+                                         com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        // get the stored EmailPasswordLogin
+        List<UnconfirmedEmailPasswordLogin> unconfirmedEmailPasswordLoginList = fetchUnconfirmedEmailPasswordLoginBySecret(confirmationCode);
+        if(unconfirmedEmailPasswordLoginList.size() == 0) {
+            throw new BadRequestException("This Email is not waiting for confirmation!");
+        }
+        UnconfirmedEmailPasswordLogin unconfirmedEmailPasswordLogin = unconfirmedEmailPasswordLoginList.get(0);
+
+        if(unconfirmedEmailPasswordLogin.isConfirmed()) {
+            throw new BadRequestException("This Email is already confirmed!");
+        }
+        String email = unconfirmedEmailPasswordLogin.getEmail();
 
         // the id is also the email adress
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
@@ -86,16 +154,20 @@ public class AuthenticationEndpoint {
         UserEndpoint userEndpoint = new UserEndpoint();
         User user = new User();
         user.setEmail(email);
-        user.setGivenName(givenName);
-        user.setSurName(surName);
+        user.setGivenName(unconfirmedEmailPasswordLogin.getGivenName());
+        user.setSurName(unconfirmedEmailPasswordLogin.getSurName());
         User insertedUser = userEndpoint.insertUser(user, authenticatedUser);
 
         PersistenceManager pm = getPersistenceManager();
         try {
-            pm.makePersistent(new EmailPasswordLogin(email, pwdHash));
+            unconfirmedEmailPasswordLogin = pm.getObjectById(UnconfirmedEmailPasswordLogin.class, email); // cannot delete transient -> fetch 2nd time
+            String password = unconfirmedEmailPasswordLogin.getHashedPwd();
+            pm.deletePersistent(unconfirmedEmailPasswordLogin);
+            pm.makePersistent(new EmailPasswordLogin(email, password));
         } finally {
             pm.close();
         }
+
         return insertedUser;
     }
 
@@ -292,13 +364,18 @@ public class AuthenticationEndpoint {
     private void assertEmailIsAvailable(String email) throws UnauthorizedException {
         PersistenceManager pm = getPersistenceManager();
         try {
-            // EmailPasswordLoginProviderInformation has externalUserId = email
             Object loginInfo = pm.getObjectById(EmailPasswordLogin.class, email);
-
             throw new UnauthorizedException("Code2.1: The Email is already in use!");
         } catch(JDOObjectNotFoundException ex) {
             // intended!
-        }finally {
+
+            try {
+                Object loginInfo = pm.getObjectById(UnconfirmedEmailPasswordLogin.class, email);
+                throw new UnauthorizedException("Code2.1: The Email is already in use, but still unconfirmed!");
+            } catch(JDOObjectNotFoundException ex2) {
+                // intended!
+            }
+        } finally {
             pm.close();
         }
     }
@@ -497,28 +574,30 @@ public class AuthenticationEndpoint {
         PersistenceManager mgr = getPersistenceManager();
         Transaction transaction = mgr.currentTransaction();
         try {
-            transaction.begin(); // transaction in order to update dependent relation
+            transaction.begin(); // remove associated login from user and delete UserLoginProviderInformation manually (workaround)
             mgr.makePersistent(user);
 
-            // Set filter for UserLoginProviderInformation
-            Query.Filter externalUserIdFilter = new Query.FilterPredicate("externalUserId", Query.FilterOperator.EQUAL, associatedLogin.getExternalUserId());
-            Query.Filter providerFilter = new Query.FilterPredicate("provider", Query.FilterOperator.EQUAL, associatedLogin.getProvider().toString());
-            Query.Filter filter = new Query.CompositeFilter(Query.CompositeFilterOperator.AND,
-                    Arrays.asList(externalUserIdFilter, providerFilter));
-            com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
-                    "UserLoginProviderInformation").setFilter(filter);
-            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            PreparedQuery pq = datastore.prepare(q);
-            Entity providerInformationEntity = pq.asSingleEntity();
-            datastore.delete(providerInformationEntity.getKey());
+            javax.jdo.Query q = mgr.newQuery(UserLoginProviderInformation.class);
+            q.setFilter("this.externalUserId == :externalUserId && this.provider == :provider");
+            Map params = new HashMap();
+            params.put("externalUserId", associatedLogin.getExternalUserId());
+            params.put("provider", associatedLogin.getProvider().toString());
+            List<UserLoginProviderInformation> loginInfos = (List<UserLoginProviderInformation>) q.executeWithMap(params);
 
-            transaction.commit();
+            if(loginInfos.size() == 0) {
+                throw new IllegalStateException("Did not find UserLoginProviderInformation to delete! Performing rollback.");
+            } else if (loginInfos.size() > 1) {
+                throw new IllegalStateException("UserLoginProviderInformation was not destinct for deletion! Performing rollback.");
+            }
+
+            mgr.deletePersistent(mgr.getObjectById(UserLoginProviderInformation.class, loginInfos.get(0).getKey())); // use persistence manager for transaction
 
             if(associatedLogin.getProvider().equals(LoginProviderType.EMAIL_PASSWORD)) {
                 EmailPasswordLogin emailPwd = mgr.getObjectById(EmailPasswordLogin.class, associatedLogin.getExternalEmail());
                 mgr.deletePersistent(emailPwd);
             }
 
+            transaction.commit();
 
             Cache.cache(user.getId(), User.class, user);
             Cache.invalidatUserLogins(user); // make sure the associatedLogin is not chached any more.
@@ -554,7 +633,7 @@ public class AuthenticationEndpoint {
      */
     private void assertAssociationPreconditions(AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
         if(unAssociatedUser == null) {
-            throw new UnauthorizedException("Code4.1: The Google token does not seem to be valid!");
+            throw new UnauthorizedException("Code4.1: The token does not seem to be valid!");
         }
         User user = null;
 
