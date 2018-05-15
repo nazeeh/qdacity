@@ -32,6 +32,7 @@ export default class CustomForm extends VexModal {
 		this.selectedExerciseID = '';
 		this.selectedExerciseGroupID = '';
 		this.ExtendsExercise = false;
+		this.ExtendsExerciseOrGroup = '';
 		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
 		this.setSelectedExerciseID = this.setSelectedExerciseID.bind(this);
 		this.setSelectedExerciseGroupID = this.setSelectedExerciseGroupID.bind(
@@ -46,11 +47,15 @@ export default class CustomForm extends VexModal {
 		this.selectedRevisionID = revisionID;
 	}
 
-	setSelectedExerciseID(exerciseID) {
+	setSelectedExerciseID(exerciseID, projectRevisionID) {
+		this.ExtendsExerciseOrGroup = 'Exercise';
 		this.selectedExerciseID = exerciseID;
+		this.selectedRevisionID = projectRevisionID;
 	}
-	setSelectedExerciseGroupID(exerciseGroupID) {
+	setSelectedExerciseGroupID(exerciseGroupID, projectRevisionID) {
+		this.ExtendsExerciseOrGroup = 'ExerciseGroup';
 		this.selectedExerciseGroupID = exerciseGroupID;
+		this.selectedRevisionID = projectRevisionID;
 	}
 
 	setSelectedDate(date) {
@@ -289,6 +294,10 @@ export default class CustomForm extends VexModal {
 					if (data != false) {
 						data.SelectedRevisionID = _this.selectedRevisionID;
 						data.SelectedDate = _this.selectedDate;
+						data.ExtendsExercise = _this.ExtendsExercise;
+						data.SelectedExerciseID = _this.selectedExerciseID;
+						data.SelectedExerciseGroupID = _this.selectedExerciseGroupID;
+						data.ExtendsExerciseOrGroup = _this.ExtendsExerciseOrGroup;
 						resolve(data);
 					} else reject(data);
 				},

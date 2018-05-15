@@ -47,7 +47,7 @@ export default class ExerciseGroupSelector extends React.Component {
 				//Add the exercise name & its click event handler to the dropdown
 				exerciseNameList.push({
 					text: 'Exercise: ' + exercise.name,
-					onClick: _this.exerciseClicked.bind(_this, exercise.id)
+					onClick: _this.exerciseClicked.bind(_this, exercise.id, exercise.projectRevisionID)
 				});
 			});
 			//Then get a list of exercise groups which belong to the term course
@@ -94,7 +94,8 @@ export default class ExerciseGroupSelector extends React.Component {
 							text: groupDisplayName,
 							onClick: _this.exerciseGroupClicked.bind(
 								_this,
-								modifiedExerciseGroup.id
+								modifiedExerciseGroup.id,
+								modifiedExerciseGroup.projectRevisionID
 							)
 						});
 					}
@@ -109,12 +110,12 @@ export default class ExerciseGroupSelector extends React.Component {
 		});
 	}
 
-	exerciseClicked(exerciseID) {
-		this.props.setSelectedExerciseID(exerciseID);
+	exerciseClicked(exerciseID, projectRevisionID) {
+		this.props.setSelectedExerciseID(exerciseID, projectRevisionID);
 	}
 
-	exerciseGroupClicked(exerciseGroupID) {
-		this.props.setSelectedExerciseGroupID(exerciseGroupID);
+	exerciseGroupClicked(exerciseGroupID, projectRevisionID) {
+		this.props.setSelectedExerciseGroupID(exerciseGroupID, projectRevisionID);
 	}
 
 	render() {

@@ -112,12 +112,22 @@ export default class ExerciseList extends React.Component {
 		);
 
 		modal.showModal().then(function(data) {
-			_this.createNewExercise(
-				data.name,
-				data.exerciseType,
-				data.SelectedRevisionID,
-				data.SelectedDate
-			);
+			if (data.ExtendsExercise) {
+				if (data.ExtendsExerciseOrGroup == 'Exercise') {
+					console.log('extend exercise ' + data.SelectedExerciseID + " with project revision id: " + data.SelectedRevisionID);
+				}
+				else if (data.ExtendsExerciseOrGroup == 'ExerciseGroup') {
+					console.log('extend exercise group ' + data.SelectedExerciseGroupID+ " with project revision id: " + data.SelectedRevisionID);
+				}
+			}
+			else {
+				_this.createNewExercise(
+					data.name,
+					data.exerciseType,
+					data.SelectedRevisionID,
+					data.SelectedDate
+				);
+			}
 		});
 	}
 
