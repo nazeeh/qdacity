@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { FormattedMessage } from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
-import UserGropuEndpoint from '../../common/endpoints/UserGroupEndpoint.js';
+import UserGroupEndpoint from '../../common/endpoints/UserGroupEndpoint.js';
 
 import { ListMenu } from '../../common/styles/ItemList.jsx';
 import { StyledSearchField } from '../../common/styles/SearchBox.jsx';
@@ -29,7 +29,7 @@ export default class GroupInviteUserField extends React.Component {
 	inviteUser() {
 		const { formatMessage } = IntlProvider.intl;
 		const _this = this;
-		UserGropuEndpoint.addParticipantByEmail(this.props.userGroup.id, this.state.userEmail)
+		UserGroupEndpoint.inviteParticipantByEmail(this.props.userGroup.id, this.state.userEmail)
 			.then(function(resp) {
 				alertify.success(
 					formatMessage(

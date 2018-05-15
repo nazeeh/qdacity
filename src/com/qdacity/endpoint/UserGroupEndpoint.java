@@ -239,7 +239,7 @@ public class UserGroupEndpoint {
             notification.setOriginUser(invitingUser.getId());
             notification.setUserGroupId(groupId);
             notification.setSettled(false);
-            notification.setType(UserNotificationType.INVITATION);
+            notification.setType(UserNotificationType.INVITATION_GROUP);
             notification.setUser(userId);
 
             mgr.makePersistent(notification);
@@ -248,6 +248,14 @@ public class UserGroupEndpoint {
         }
     }
 
+    /**
+     * Confirms the invite to the group.
+     * @param groupId
+     * @param loggedInUser
+     * @throws UnauthorizedException
+     * @throws BadRequestException
+     */
+    @ApiMethod(name = "usergroup.acceptParticipantInvitation")
     public void confirmParticipantInvitation(@Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The user could not be authenticated");
