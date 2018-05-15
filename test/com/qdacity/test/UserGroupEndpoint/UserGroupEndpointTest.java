@@ -215,7 +215,7 @@ public class UserGroupEndpointTest {
         UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authGroupOwner);
         assertEquals(0, group1.getParticipants().size());
 
-        new UserGroupEndpoint().addParticipantByEmail(participant.getEmail(), group1.getId(), authGroupOwner);
+        new UserGroupEndpoint().inviteParticipantByEmail(participant.getEmail(), group1.getId(), authGroupOwner);
         new UserGroupEndpoint().confirmParticipantInvitation(group1.getId(), authParticipant);
 
         group1 = new UserGroupEndpoint().getUserGroupById(group1.getId(), authGroupOwner);
@@ -268,7 +268,7 @@ public class UserGroupEndpointTest {
 
         thrown.expect(BadRequestException.class);
         thrown.expectMessage("User with email " + testEmailNotExists + " not found!");
-        new UserGroupEndpoint().addParticipantByEmail(testEmailNotExists, group1.getId(), authGroupOwner);
+        new UserGroupEndpoint().inviteParticipantByEmail(testEmailNotExists, group1.getId(), authGroupOwner);
     }
 
     @Test
