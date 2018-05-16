@@ -66,29 +66,28 @@ class Endpoint {
       access_token: token,
     };
 
-logger.debug(`trying to discover ${root}/discovery/v1/apis/qdacity/${version}/rest`);
+logger.debug(`Trying to discover ${root}/discovery/v1/apis/qdacity/${version}/rest`);
     // Try to discover the API
-    google.discoverAPI(
-      `${root}/discovery/v1/apis/qdacity/${version}/rest`,
-      {
-        auth: oauth2Client,
-	}).then((api)=> {
-		logger.debug(`API discovery callback ${JSON.stringify(api)}`);
-	  // Error: Something went wrong, e.g. API configuration wrong or
-	  // authorization invalid.
+	google.discoverAPI(
+		`${root}/discovery/v1/apis/qdacity/${version}/rest`,
+		{auth: oauth2Client,}
+	).then((api)=> {
+		logger.debug(`API discovered ${JSON.stringify(api)}`);
 
-	  // Set new api and process queued requests
-	  this._api = api;
-	  this._queue.map(params => {
-		this._executeRequest(params.endpoint, params.args).then(
-		  params.resolve,
-		  params.reject
-	  );
-	  });
-	}
-).catch((err) => {logger.error('API discovery failed', err);
-this._queue.map(params => params.reject('API discovery failed'));
-});
+		// Set new api and process queued requests
+		this._api = api;
+		this._queue.map(params => {
+			this._executeRequest(params.endpoint, params.args).then(
+			  params.resolve,
+			  params.reject
+			);
+		});
+	}).catch((err) => {
+		// Error: Something went wrong, e.g. API configuration wrong or
+		// authorization invalid.
+		logger.error('API discovery failed', err);
+		this._queue.map(params => params.reject('API discovery failed'));
+	});
   }
 
   /**
@@ -102,7 +101,7 @@ this._queue.map(params => params.reject('API discovery failed'));
    */
   request(endpoint, args) {
     if (this._api === null) {
-		logger.debug('push to queue');
+      logger.debug(`pushing request to ${endpoint} into queue`);
       return this._pushToQueue(endpoint, args);
     } else {
       return this._executeRequest(endpoint, args);
