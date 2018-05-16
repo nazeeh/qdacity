@@ -261,7 +261,7 @@ public class ExerciseEndpointTest {
         Date nextYear = new Date();
         nextYear.setTime(31556952000L + nextYear.getTime());
 
-        latch.reset(12);
+        latch.reset(10);
         com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
         User addedStudentA = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
         com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@group.riehle.org", LoginProviderType.GOOGLE);
@@ -595,7 +595,7 @@ public class ExerciseEndpointTest {
         Date nextYear = new Date();
         nextYear.setTime(31556952000L + nextYear.getTime());
 
-        latch.reset(12);
+        latch.reset(10);
         com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
         User addedStudentA = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
         com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@group.riehle.org", LoginProviderType.GOOGLE);
