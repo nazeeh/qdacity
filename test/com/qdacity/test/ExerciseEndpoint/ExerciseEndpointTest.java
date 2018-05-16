@@ -477,7 +477,7 @@ public class ExerciseEndpointTest {
         Date nextYear = new Date();
         nextYear.setTime(31556952000L + nextYear.getTime());
 
-        latch.reset(12);
+        latch.reset(10);
         com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
         User addedStudentA = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
         com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@group.riehle.org", LoginProviderType.GOOGLE);
@@ -522,10 +522,13 @@ public class ExerciseEndpointTest {
         finally {
             mgr.close();
         }
+
+
+
         //Assertion to confirm that the exercise report was created
         assertEquals(1, exerciseReportsBeforeDeletion.size());
 
-
+        latch.reset(3);
         mgr = PMF.get().getPersistenceManager();
         try {
             javax.jdo.Query q;
@@ -538,16 +541,15 @@ public class ExerciseEndpointTest {
         finally {
             mgr.close();
         }
-        //Test deleteExerciseProjectReport
-        assertEquals(0, exerciseReportsAfterDeletion.size());
-
 
         try {
-            latch.await(40, TimeUnit.SECONDS);
+            latch.await(25, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
             fail("Deferred task did not finish in time");
         }
+        //Test deleteExerciseProjectReport
+        assertEquals(0, exerciseReportsAfterDeletion.size());
 
         mgr = PMF.get().getPersistenceManager();
         try {
