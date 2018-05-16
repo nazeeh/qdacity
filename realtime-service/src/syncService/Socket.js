@@ -102,11 +102,11 @@ class Socket {
    * @arg {mixed} data - Data to be sent with ack and event.
    */
   handleApiResponse(event, ack, res) {
-	  const data = res.data;
-	  logger.info(' handling response');
+    const data = res.data;
     // Send acknowledgement to initiating client
-    //ack('ok', data);
-logger.info(' ACKNOWLEDGED' + JSON.stringify({...data}));
+    logger.info(' Acknowledging ' + JSON.stringify({...data}));
+    ack('ok', data);
+
     // Emit event to socket's projectRoom
     this._emitToProject(event, data);
   }
