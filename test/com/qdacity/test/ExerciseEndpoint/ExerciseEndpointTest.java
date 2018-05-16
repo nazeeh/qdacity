@@ -317,15 +317,6 @@ public class ExerciseEndpointTest {
         TextDocumentEndpoint tde = new TextDocumentEndpoint();
         List<AgreementMap> agreementMaps = tde.getAgreementMaps(report.getId(), "EXERCISE", testUser);
         assertEquals(1, agreementMaps.size());
-        latch.reset(1);
-
-        try {
-            latch.await(20, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            fail("Deferred task did not finish in time");
-        }
-
     }
 
     @Test
