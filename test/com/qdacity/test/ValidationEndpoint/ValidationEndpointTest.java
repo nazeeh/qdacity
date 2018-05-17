@@ -59,7 +59,7 @@ public class ValidationEndpointTest {
 
 	@Test
 	public void testEvaluateRevisionFMeasure() throws UnauthorizedException {
-		latch.reset(12);
+		latch.reset(10);
 		com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
 		com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@group.riehle.org", LoginProviderType.GOOGLE);
@@ -111,7 +111,7 @@ public class ValidationEndpointTest {
 
 	@Test
 	public void testEvaluateRevisionAlpha() throws UnauthorizedException {
-		latch.reset(12);
+		latch.reset(7);
 		com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentA);
 
@@ -150,7 +150,7 @@ public class ValidationEndpointTest {
 
 	@Test
 	public void testEvaluateRevisionKappa() throws UnauthorizedException {
-		latch.reset(12);
+		latch.reset(7);
 		com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentA);
 

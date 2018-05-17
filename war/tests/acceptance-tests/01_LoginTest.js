@@ -35,7 +35,7 @@ describe(SPEC_NAME, function () {
     /**
      * This function tests the login of QDAcity with a google test-account. It registers a new account in QDAcity.
      */
-    it('Should register and login a user', (done) => {
+    it('Should register and login a user', async (done) => {
     	
     	const _this = this;
     
@@ -70,7 +70,7 @@ describe(SPEC_NAME, function () {
 		}); 		
 		
 		this.driver.sleep(2000);
-		this.driver.get('http://localhost:8888/').then(() => {
+		this.driver.get('http://localhost:8888/').then( async () => {
 			this.driver.wait(until.elementLocated(By.xpath("//a[@id='signin-formula-register-link']")));
 			
 			// Login Email
@@ -88,8 +88,8 @@ describe(SPEC_NAME, function () {
 				console.log('Signed in.');
 			}); 
 
-			_this.driver.sleep(2000);
-
+			await _this.driver.wait(until.urlContains('PersonalDashboard'), 3000);
+			
 			// Check welcome message and URL
 			_this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
 				console.log('Found the welcome message.');
@@ -109,6 +109,7 @@ describe(SPEC_NAME, function () {
 					});
 
 					loginHelper.storeLoginState(_this.driver).then(() => {
+						console.log('Test Successful!');
 						done();
 					});
 				})
