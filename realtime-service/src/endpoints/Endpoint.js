@@ -141,7 +141,7 @@ logger.debug(`Trying to discover ${root}/discovery/v1/apis/qdacity/${version}/re
         .reduce((fn, segment) => fn[segment], this._api);
 
       // Define Response handle that translates to promise resolve/reject
-      const handleResponse = (err, res) => (err ? reject(err) : resolve(res));
+      const handleResponse = (err, res) => (err ? reject(err) : resolve(res.data));
 
       // Call the function with arguments and pass result to resolve/reject
       fn(args, handleResponse);
