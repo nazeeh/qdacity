@@ -31,8 +31,7 @@ export default class RevisionHistory extends React.Component {
 			revisions: [],
 			validationProjects: [],
 			reports: [],
-			isAdmin: false,
-			isProjectOwner: false
+			isAdmin: false
 		};
 
 		this.renderReports = this.renderReports.bind(this);
@@ -87,11 +86,9 @@ export default class RevisionHistory extends React.Component {
 
 	setRights(user) {
 		const isAdmin = user.type === 'ADMIN';
-		const isProjectOwner = this.props.isProjectOwner;
 
 		this.setState({
-			isAdmin: isAdmin,
-			isProjectOwner: isProjectOwner
+			isAdmin: isAdmin
 		});
 	}
 
@@ -245,7 +242,7 @@ export default class RevisionHistory extends React.Component {
 	}
 
 	renderRevisionDeleteBtn(revision, index) {
-		if (this.state.isAdmin || this.state.isProjectOwner)
+		if (this.state.isAdmin || this.props.isProjectOwner)
 			return (
 				<a
 					onClick={() => this.deleteRevision(revision.id, index)}
@@ -280,7 +277,7 @@ export default class RevisionHistory extends React.Component {
 					<ReportList
 						reports={reports}
 						isAdmin={this.state.isAdmin}
-						isProjectOwner={this.state.isProjectOwner}
+						isProjectOwner={this.props.isProjectOwner}
 						history={this.props.history}
 					/>
 				</div>
@@ -289,7 +286,7 @@ export default class RevisionHistory extends React.Component {
 	}
 
 	renderCreateReportBtn(revId) {
-		if (this.state.isAdmin || this.state.isProjectOwner)
+		if (this.state.isAdmin || this.props.isProjectOwner)
 			return (
 				<SyledCreateReportBtn
 					onClick={() => this.createReport(revId)}
@@ -326,7 +323,7 @@ export default class RevisionHistory extends React.Component {
 					<ValPrjList
 						validationProjects={validationProjects}
 						isAdmin={this.state.isAdmin}
-						isProjectOwner={this.state.isProjectOwner}
+						isProjectOwner={this.props.isProjectOwner}
 						history={this.props.history}
 					/>
 				</div>
@@ -392,7 +389,7 @@ export default class RevisionHistory extends React.Component {
 					<CreateRevisionBtn
 						createNewRevision={this.createNewRevision}
 						project={this.props.project}
-						isProjectOwner={this.state.isProjectOwner}
+						isProjectOwner={this.props.isProjectOwner}
 					/>
 				</div>
 				<div className="box-body">
