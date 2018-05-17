@@ -9,6 +9,10 @@ class Conditions {
 		return By.xpath("//ul/li/span[text()='" + projectName + "']");
 	}
 
+	static getCourse(courseName) {
+		return By.xpath("//ul/li/span[text()='" + courseName + "']");
+	}
+
 	static getProjectCodingEditorButton(projectName) {
 		return By.xpath("//ul/li/span[text()='" + projectName + "']/following-sibling::div/button/i[contains(@class,'fa-tags')]");
 	}
@@ -45,6 +49,10 @@ class Conditions {
 		Conditions.assertElementExists(driver, '/PersonalDashboard', 'Project', Conditions.getProject(projectName), then);
 	}
 
+	static assertCourseExists(driver, courseName, then) {
+		Conditions.assertElementExists(driver, '/PersonalDashboard', 'Course', Conditions.getCourse(courseName), then);
+	}
+
 	static assertProjectDescription(driver, projectDescription, then) {
 		Conditions.assertElementExists(driver, '/ProjectDashboard', 'Project description', Conditions.getProjectDescription(projectDescription), then);
 	}
@@ -52,7 +60,7 @@ class Conditions {
 	static assertCodeExists(driver, codeName, then) {
 		Conditions.assertElementExists(driver, '/CodingEditor', 'Code', Conditions.getCode(codeName), then);
 	}
-	
+
 	static assertDocumentExists(driver, documentName, then) {
 		Conditions.assertElementExists(driver, '/CodingEditor', 'Document', Conditions.getDocument(documentName), then);
 	}

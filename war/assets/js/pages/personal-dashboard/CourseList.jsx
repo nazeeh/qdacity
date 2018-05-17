@@ -506,7 +506,7 @@ export default class CourseList extends React.Component {
 
 					<StyledNewCourseBtn id="newCourse">
 						<BtnDefault
-							id="newPrjBtn"
+							id="newCourseBtn"
 							href="#"
 							onClick={this.showNewCourseModal}
 						>

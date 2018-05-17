@@ -4,3 +4,4 @@ require('./02_ProjectTest.js');
 require('./coding-editor/CodesTest.js');
 require('./coding-editor/DocumentTest.js');
 require('./settings/DeleteUserTest.js');
+require('./03_CourseTest.js');
