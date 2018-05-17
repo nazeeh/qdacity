@@ -56,7 +56,7 @@ export default class CreateRevisionBtn extends React.Component {
 				</StyledCreateRevisionBtn>
 			);
 		} else {
-			return null;
+			return '';
 		}
 	}
 }
