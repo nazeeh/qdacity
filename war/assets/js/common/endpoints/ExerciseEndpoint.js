@@ -57,19 +57,22 @@ export default class ExerciseEndpoint {
 	}
 
 	static createAndInsertExerciseToExerciseGroup(exercise, ExerciseGroupID) {
-		var apiMethod = gapi.client.qdacity.exercise.createAndInsertExerciseToExerciseGroup({
-			exercise: exercise,
-			ExerciseGroupID: ExerciseGroupID
-		});
+		var apiMethod = gapi.client.qdacity.exercise.createAndInsertExerciseToExerciseGroup(
+			{
+				ExerciseGroupID: ExerciseGroupID
+			},
+			exercise
+		);
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static insertExerciseGroupForNewExercise(exercise, existingExerciseID, ExerciseGroupName) {
 		var apiMethod = gapi.client.qdacity.exercise.insertExerciseGroupForNewExercise({
-			newExercise: exercise,
 			existingExerciseID: existingExerciseID,
 			ExerciseGroupName: ExerciseGroupName
-		});
+		},
+	exercise
+);
 		return Promisizer.makePromise(apiMethod);
 	}
 
