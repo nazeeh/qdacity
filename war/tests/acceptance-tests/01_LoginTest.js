@@ -88,7 +88,7 @@ describe(SPEC_NAME, function () {
 				console.log('Signed in.');
 			}); 
 
-			await _this.driver.wait(until.urlContains('PersonalDashboard'), 3000);
+			await _this.driver.wait(until.urlContains('PersonalDashboard'), 6000);
 			
 			// Check welcome message and URL
 			_this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
