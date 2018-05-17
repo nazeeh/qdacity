@@ -1,6 +1,6 @@
-const google = require('googleapis');
+const {GoogleApis} = require('googleapis');
 const logger = require('../utils/Logger');
-
+const google = new GoogleApis();
 /**
  * Endpoint class
  *
@@ -66,31 +66,28 @@ class Endpoint {
       access_token: token,
     };
 
+logger.debug(`Trying to discover ${root}/discovery/v1/apis/qdacity/${version}/rest`);
     // Try to discover the API
-    google.discoverAPI(
-      `${root}/discovery/v1/apis/qdacity/${version}/rest`,
-      {
-        auth: oauth2Client,
-      },
-      (err, api) => {
-        // Error: Something went wrong, e.g. API configuration wrong or
-        // authorization invalid.
-        if (err) {
-          logger.error('API discovery failed', err);
-          this._queue.map(params => params.reject('API discovery failed'));
-          return;
-        }
+	google.discoverAPI(
+		`${root}/discovery/v1/apis/qdacity/${version}/rest`,
+		{auth: oauth2Client,}
+	).then((api)=> {
+		logger.debug(`API discovered ${JSON.stringify(api)}`);
 
-        // Set new api and process queued requests
-        this._api = api;
-        this._queue.map(params => {
-          this._executeRequest(params.endpoint, params.args).then(
-            params.resolve,
-            params.reject
-          );
-        });
-      }
-    );
+		// Set new api and process queued requests
+		this._api = api;
+		this._queue.map(params => {
+			this._executeRequest(params.endpoint, params.args).then(
+			  params.resolve,
+			  params.reject
+			);
+		});
+	}).catch((err) => {
+		// Error: Something went wrong, e.g. API configuration wrong or
+		// authorization invalid.
+		logger.error('API discovery failed', err);
+		this._queue.map(params => params.reject('API discovery failed'));
+	});
   }
 
   /**
@@ -104,6 +101,7 @@ class Endpoint {
    */
   request(endpoint, args) {
     if (this._api === null) {
+      logger.debug(`pushing request to ${endpoint} into queue`);
       return this._pushToQueue(endpoint, args);
     } else {
       return this._executeRequest(endpoint, args);
@@ -143,7 +141,7 @@ class Endpoint {
         .reduce((fn, segment) => fn[segment], this._api);
 
       // Define Response handle that translates to promise resolve/reject
-      const handleResponse = (err, res) => (err ? reject(err) : resolve(res));
+      const handleResponse = (err, res) => (err ? reject(err) : resolve(res.data));
 
       // Call the function with arguments and pass result to resolve/reject
       fn(args, handleResponse);
