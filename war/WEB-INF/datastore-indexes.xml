@@ -19,4 +19,8 @@
 		<property name="eventType" direction="asc"/>
 		<property name="datetime" direction="asc"/>
 	</datastore-index>
+	 <datastore-index kind="Exercise" ancestor="false" source="manual">
+		<property name="snapshotsAlreadyCreated" direction="asc"/>
+		<property name="exerciseDeadline" direction="asc"/>
+	</datastore-index>
 </datastore-indexes>
