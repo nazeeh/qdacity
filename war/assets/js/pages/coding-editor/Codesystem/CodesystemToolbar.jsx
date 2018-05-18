@@ -153,7 +153,7 @@ export default class CodesystemToolbar extends React.Component {
 		} else {
 			return (
 				<StyledBtnGroup className="btn-group">
-					<BtnDefault className="btn btn-default" onClick={this.applyCode}>
+					<BtnDefault className="btn btn-default" onClick={this.applyCode} id="applyCodeBtn">
 						<StyledBtnStack className="fa-stack fa-lg">
 							<i className="fa fa-tag fa-stack-2x" />
 							<i className="fa fa-plus fa-stack-1x fa-inverse" />

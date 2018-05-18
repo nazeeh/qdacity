@@ -3,5 +3,6 @@ require('./01_LoginTest.js');
 require('./02_ProjectTest.js');
 require('./coding-editor/CodesTest.js');
 require('./coding-editor/DocumentTest.js');
+require('./coding-editor/ApplyCodeTest.js');
 require('./settings/DeleteUserTest.js');
 require('./03_CourseTest.js');
