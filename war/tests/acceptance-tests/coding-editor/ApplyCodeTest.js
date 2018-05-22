@@ -55,10 +55,13 @@ describe(SPEC_NAME, function () {
 		// Go to coding-editor
 		this.driver.wait(until.elementLocated(By.xpath("//button/span[text()='Coding-Editor']"))).click();
 		this.driver.sleep(2000);
-		//Todo: Select the text
+
+		//This selects the second half of the text because dragAndDrop starts from the center of the element..
+		//..and does not give the option to pass the coordinates
+		this.driver.actions().dragAndDrop(this.driver.findElement(By.xpath("//span[text()='This is the text.']")), {x: 50, y: 0}).perform();
 
 		//Apply code
-		//this.driver.wait(until.elementLocated(By.id('applyCodeBtn'))).click();
+		this.driver.wait(until.elementLocated(By.id('applyCodeBtn'))).click();
 
     }, Common.getExtendedTimeout());
 });
