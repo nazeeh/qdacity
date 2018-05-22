@@ -63,5 +63,9 @@ describe(SPEC_NAME, function () {
 		//Apply code
 		this.driver.wait(until.elementLocated(By.id('applyCodeBtn'))).click();
 
+		this.driver.wait(until.elementLocated(By.id('codingBracket'))).getText().then((text) => {
+			expect(text).toBe("Code System");
+			done();
+    	});
     }, Common.getExtendedTimeout());
 });

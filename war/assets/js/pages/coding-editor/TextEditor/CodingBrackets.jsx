@@ -192,7 +192,7 @@ export default class CodingBrackets extends React.Component {
 					onMouseOver={this.handleBracketMouseOver}
 					onMouseOut={this.handleBracketMouseOut}
 				/>
-				<StyledText
+				<StyledText id="codingBracket"
 					x={labelX}
 					y={labelY}
 					fill={color}
