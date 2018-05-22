@@ -103,7 +103,7 @@ class Socket {
    */
   handleApiResponse(event, ack, res) {
     // Send acknowledgement to initiating client
-    logger.info(' Acknowledging ' + JSON.stringify({...res}));
+    logger.debug(' Acknowledging ' + JSON.stringify({...res}));
     ack('ok', res);
 
     // Emit event to socket's projectRoom
