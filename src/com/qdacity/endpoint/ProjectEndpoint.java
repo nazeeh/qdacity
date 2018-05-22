@@ -941,6 +941,32 @@ public class ProjectEndpoint {
 		}
 	}
 
+	/**
+	 * This method removes the entity with primary key id.
+	 * It uses HTTP DELETE method.
+	 *
+	 * @param id the primary key of the entity to be deleted.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "project.removeExerciseProject", path = "exercises")
+	public void removeExerciseProject(@Named("id") Long id, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			ExerciseProject project = mgr.getObjectById(ExerciseProject.class, id);
+			// Check if user is authorized
+			// Authorization.checkAuthorization(project.getProjectID(), user);
+
+			// Long codeSystemID = project.getCodesystemID();
+
+
+			removeAssociatedData(project);
+			mgr.deletePersistent(project);
+
+		} finally {
+			mgr.close();
+		}
+	}
+
 	private void removeAllValidationProjects(Long revisionId) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -963,7 +989,7 @@ public class ProjectEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void removeAssociatedData(ValidationProject project) {
+	private void removeAssociatedData(ProjectRevision project) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			// Delete all documents

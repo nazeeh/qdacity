@@ -169,6 +169,12 @@ public class ExerciseEndpoint {
 			// Check if user is authorized
 			Authorization.checkAuthorizationTermCourse(termCourse, user);
 
+            List<ExerciseProject> exerciseProjects = this.getExerciseProjectsByExerciseID(id, user);
+            ProjectEndpoint pe = new ProjectEndpoint();
+            for (ExerciseProject project : exerciseProjects ) {
+                pe.removeExerciseProject(project.getId(), user);
+            }
+
 			mgr.deletePersistent(exercise);
 		} finally {
 			mgr.close();
