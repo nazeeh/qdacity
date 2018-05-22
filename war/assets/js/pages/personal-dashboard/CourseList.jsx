@@ -473,7 +473,7 @@ export default class CourseList extends React.Component {
 				>
 					<i className="fa fa-trash " />
 				</StyledListItemBtn>
-				<StyledListItemBtn
+				<StyledListItemBtn id="configureCourseBtn"
 					onClick={e => this.configureCourse(e, course, index)}
 					className=" btn fa-lg"
 					color={Theme.darkGreen}

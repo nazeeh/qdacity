@@ -268,7 +268,7 @@ export default class TermCourseList extends React.Component {
 		var course = this.props.course;
 		if (course.isUserOwner) {
 			return (
-				<StyledListItemBtn
+				<StyledListItemBtn id="configureTermCourseBtn"
 					onClick={e => this.configureTermCourse(e, term, index)}
 					className=" btn fa-lg"
 					color={Theme.darkGreen}
