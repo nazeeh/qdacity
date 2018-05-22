@@ -41,7 +41,7 @@ export default class CreateRevisionBtn extends React.Component {
 	render() {
 		if (this.props.isProjectOwner) {
 			return (
-				<StyledCreateRevisionBtn
+				<StyledCreateRevisionBtn id="CreateRevisionBtn"
 					type="button"
 					className="pull-right"
 					onClick={() => this.showNewRevisionModal()}
