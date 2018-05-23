@@ -6,6 +6,7 @@ import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CourseEndpoint from '../../common/endpoints/CourseEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
+import UserGroupEndpoint from '../../common/endpoints/UserGroupEndpoint';
 
 import {
 	ItemList,
@@ -107,6 +108,16 @@ export default class NotificationList extends React.Component {
 		console.log(notification);
 		CourseEndpoint.addParticipant(notification.termCourse).then(function(resp) {
 			var termCourse = resp;
+			console.log(resp);
+			_this.settleNotification(notification);
+		});
+	}
+
+	acceptInvitationUserGroup(notification) {
+		var _this = this;
+		console.log(notification);
+		UserGroupEndpoint.confirmParticipantInvitation(notification.userGroupId).then(function(resp) {
+			var userGroup = resp;
 			console.log(resp);
 			_this.settleNotification(notification);
 		});
@@ -265,6 +276,37 @@ export default class NotificationList extends React.Component {
 							<StyledListItemBtn
 								className=" btn fa-lg notificationAccept"
 								onClick={() => this.acceptInvitationTermCourse(notification)}
+								color={Theme.darkGreen}
+								colorAccent={Theme.darkGreenAccent}
+							>
+								<i className="fa fa-check" />
+							</StyledListItemBtn>
+						</StyledActionBtns>
+					);
+				}
+				break;
+
+			case 'INVITATION_GROUP':
+				if (notification.settled) {
+					return (
+						<StyledGreenIcon className=" fa-lg">
+							<i className="fa fa-check fa-2x " />
+						</StyledGreenIcon>
+					);
+				} else {
+					return (
+						<StyledActionBtns>
+							<StyledListItemBtn
+								className=" btn  fa-lg"
+								onClick={() => this.settleNotification(notification)}
+								color={Theme.rubyRed}
+								colorAccent={Theme.rubyRedAccent}
+							>
+								<i className="fa fa-times" />
+							</StyledListItemBtn>
+							<StyledListItemBtn
+								className=" btn fa-lg notificationAccept"
+								onClick={() => this.acceptInvitationUserGroup(notification)}
 								color={Theme.darkGreen}
 								colorAccent={Theme.darkGreenAccent}
 							>

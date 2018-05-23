@@ -1,11 +1,16 @@
 //@ts-check
 import React, { Component } from 'react';
 
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import { FormattedMessage } from 'react-intl';
+import Theme from '../../common/styles/Theme.js';
+
+import UserGropuEndpoint from '../../common/endpoints/UserGroupEndpoint.js';
 
 import styled from 'styled-components';
 import {
 	ItemList,
+	StyledListItemBtn,
 	StyledListItemDefault,
 	StyledListItemPrimary
 } from '../../common/styles/ItemList.jsx';
@@ -47,17 +52,75 @@ export default class GroupUserList extends Component {
 		return this.props.userGroup.owners.includes(user.id);
 	}
 
-	renderUser(user, inde) {
+	removeUser(e, user, index) {
+		const { formatMessage } = IntlProvider.intl;
+		const _this = this;
+		UserGropuEndpoint.removeUser(this.props.userGroup.id, user.id)
+			.then(function(resp) {
+				alertify.success(
+					formatMessage(
+						{
+							id: 'group.removeUser.success',
+							defaultMessage: '{email} has been removed from the group'
+						},
+						{
+							email: user.email
+						}
+					)
+				);
+				_this.collectUsers(_this.props.userGroup.id);
+			})
+			.catch(function(resp) {
+				alertify.error(
+					formatMessage(
+						{
+							id: 'group.removeUser.failure',
+							defaultMessage: 'Could not remove {email} from the group'
+						},
+						{
+							email: user.email
+						}
+					)
+				);
+				_this.collectUsers(this.props.userGroup.id);
+			});
+	}
+
+	renderUserButtons(user, index) {
+		if(this.props.isOwner) {
+			return (
+				<StyledListItemBtn
+					onClick={e => this.removeUser(e, user, index)}
+					className=" btn fa-lg"
+					color={Theme.rubyRed}
+					colorAccent={Theme.rubyRedAccent}
+					>
+					<i className="fa fa-trash " />
+				</StyledListItemBtn>
+			);
+		} else {
+			return null;
+		}
+		
+	}
+
+	renderUser(user, index) {
 		if (this.isUserOwner(user)) {
 			return (
 				<StyledListItemDefault key={user.id}>
-					{user.givenName + ' ' + user.surName}
+					<span>
+						{user.givenName + ' ' + user.surName}
+					</span>
+					{this.renderUserButtons(user, index)}
 				</StyledListItemDefault>
 			);
 		} else {
 			return (
 				<StyledListItemPrimary key={user.id}>
-					{user.givenName + ' ' + user.surName}
+					<span>
+						{user.givenName + ' ' + user.surName}
+					</span>
+					{this.renderUserButtons(user, index)}
 				</StyledListItemPrimary>
 			);
 		}
@@ -77,17 +140,7 @@ export default class GroupUserList extends Component {
 
 	render() {
 		return (
-			<div className="box box-default">
-				<div className="box-header with-border">
-					<h3 className="box-title">
-						<FormattedMessage
-							id="usergroup..userlist.heading"
-							defaultMessage="Users"
-						/>
-					</h3>
-				</div>
-				<div className="box-body">{this.renderUsers()}</div>
-			</div>
+			<div className="box-body">{this.renderUsers()}</div>
 		);
 	}
 }
