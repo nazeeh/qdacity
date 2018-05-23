@@ -6,4 +6,5 @@ require('./coding-editor/DocumentTest.js');
 require('./coding-editor/ApplyCodeTest.js');
 require('./04_ProjectRevisionTest.js');
 require('./03_CourseTest.js');
-require('./settings/DeleteUserTest.js');
+require('./05_ExerciseFromRevisionTest.js');
+require('./06_JoinTermCourseTest.js');
