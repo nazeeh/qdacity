@@ -44,6 +44,21 @@ describe(SPEC_NAME, function () {
 				const urlContent = "/CourseDashboard";
 				expect(currentUrl.includes(urlContent)).toBeTruthy();
 				this.driver.wait(until.elementLocated(By.id('configureTermCourseBtn'))).click();
+
+				this.driver.getCurrentUrl().then((currentUrl) => {
+						// Does the URL end with /TermCourseConfig?
+						const urlContent = "/TermCourseConfig";
+						expect(currentUrl.includes(urlContent)).toBeTruthy();
+						//Wait for projects & revisions to be retrieved
+						this.driver.sleep(4000);
+						this.driver.wait(until.elementLocated(By.id('newExerciseBtn'))).click();
+
+						//Insert exercise parameters
+			    	this.driver.wait(until.elementLocated(By.xpath("//div[@class='vex-custom-field-wrapper']/div[@class='vex-custom-input-wrapper']/input[@name='name' and @type='text']"))).sendKeys("Exercise_1");
+						this.driver.wait(until.elementLocated(By.id('projectRevisionDropDownBtn'))).click();
+						//this.driver.wait(until.elementLocated(By.xpath("//div[@class='customDropDownParent']/li"))).click();
+				});
+
 		});
 
     }, Common.getDefaultTimeout());

@@ -226,7 +226,7 @@ export default class ExerciseList extends React.Component {
 	renderNewExerciseButton() {
 		return (
 			<StyledNewExBtn>
-				<BtnDefault onClick={this.showNewExerciseModal}>
+				<BtnDefault onClick={this.showNewExerciseModal} id="newExerciseBtn">
 					<i className="fa fa-plus fa-fw" />
 					<FormattedMessage
 						id="exerciselist.new_excercise"

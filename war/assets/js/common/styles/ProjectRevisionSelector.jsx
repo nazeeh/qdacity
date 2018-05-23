@@ -110,7 +110,7 @@ export default class ProjectRevisionSelector extends React.Component {
 					<labelContainer>
 						<label>Select a project: </label>
 					</labelContainer>
-					<DropDownButton
+					<DropDownButton 
 						isListItemButton={true}
 						items={this.state.projectNameList}
 						initText={this.state.projectInitText}
@@ -118,7 +118,7 @@ export default class ProjectRevisionSelector extends React.Component {
 				</ProjectDropDownContainer>
 				<div>
 					<label>Select a revision: </label>
-					<DropDownButton
+					<DropDownButton id="projectRevisionDropDownBtn"
 						ref={r => {
 							this.revisionSelectorRef = r;
 						}}

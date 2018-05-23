@@ -134,7 +134,7 @@ export default class DropDownButton extends React.Component {
 						className="customDropDownEventNode"
 					/>
 				</StyledEventNode>
-				<StyledDropDownBtn
+				<StyledDropDownBtn id={this.props.id}
 					onClick={this.toggleDropDown}
 					isListItemButton={this.props.isListItemButton}
 				>
