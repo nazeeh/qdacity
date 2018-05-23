@@ -40,7 +40,7 @@ export default class TableCell extends React.Component {
 				this.props.itemIndex,
 				this.props.column,
 				this.props.columnIndex
-			)
+			  )
 			: '';
 
 		return (

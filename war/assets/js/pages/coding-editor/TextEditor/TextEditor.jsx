@@ -317,7 +317,7 @@ export default class TextEditor extends React.Component {
 					data: Data.create({
 						font
 					})
-				};
+				  };
 
 		this.setState(prevState => {
 			const change = prevState.value.change();
@@ -370,7 +370,7 @@ export default class TextEditor extends React.Component {
 					data: Data.create({
 						size: `${fontsize}px`
 					})
-				};
+				  };
 
 		this.setState(prevState => {
 			const change = prevState.value.change();

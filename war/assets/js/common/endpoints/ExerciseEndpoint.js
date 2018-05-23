@@ -10,6 +10,13 @@ export default class ExerciseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static listTermCourseExerciseGroups(termCourseID) {
+		var apiMethod = gapi.client.qdacity.exercise.listTermCourseExerciseGroups({
+			termCrsID: termCourseID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static getExerciseProjectByRevisionID(revisionID, exerciseID) {
 		var apiMethod = gapi.client.qdacity.exercise.getExerciseProjectByRevisionID(
 			{
@@ -49,6 +56,26 @@ export default class ExerciseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static createAndInsertExerciseToExerciseGroup(exercise, ExerciseGroupID) {
+		var apiMethod = gapi.client.qdacity.exercise.createAndInsertExerciseToExerciseGroup(
+			{
+				ExerciseGroupID: ExerciseGroupID
+			},
+			exercise
+		);
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static insertExerciseGroupForNewExercise(exercise, existingExerciseID, ExerciseGroupName) {
+		var apiMethod = gapi.client.qdacity.exercise.insertExerciseGroupForNewExercise({
+			existingExerciseID: existingExerciseID,
+			ExerciseGroupName: ExerciseGroupName
+		},
+	exercise
+);
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static removeExercise(ExerciseID) {
 		var apiMethod = gapi.client.qdacity.exercise.removeExercise({
 			id: ExerciseID
@@ -83,6 +110,15 @@ export default class ExerciseEndpoint {
 			reportID: repId,
 			exerciseID: exerciseID
 		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static getExercisesByProjectRevisionID(exerciseID) {
+		var apiMethod = gapi.client.qdacity.exercise.getExercisesByProjectRevisionID(
+			{
+				revisionID: revisionID
+			}
+		);
 		return Promisizer.makePromise(apiMethod);
 	}
 

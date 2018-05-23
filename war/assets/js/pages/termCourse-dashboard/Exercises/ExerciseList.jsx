@@ -51,11 +51,9 @@ export default class ExerciseList extends React.Component {
 				).then(function(resp2) {
 					counter -= 1;
 					resp2.items = resp2.items || [];
-					console.log(resp2.items);
 					exercises[index] = exercise;
 					exercises[index].exerciseReport = resp2.items;
 					if (counter == 0) {
-						console.log(exercises);
 						_this.setState({
 							exercises: exercises
 						});
@@ -141,9 +139,6 @@ export default class ExerciseList extends React.Component {
 	}
 
 	exerciseReportClick(e, exercise, index) {
-		console.log(this.props.history);
-		console.log(exercise);
-		console.log(exercise.exerciseReport);
 		var agreementModal = new IntercoderAgreement(
 			exercise.exerciseReport[0],
 			this.props.history,

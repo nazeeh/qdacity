@@ -1,11 +1,18 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
+import styled from 'styled-components';
 import VexModal from './VexModal';
 import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
+import ExerciseGroupSelector from '../../common/styles/ExerciseGroupSelector.jsx';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import Theme from '../../common/styles/Theme.js';
 import { ThemeProvider } from 'styled-components';
 import DateChooser from '../../common/modals/DateChooser.jsx';
+import ExtendsExerciseCheckbox from '../../common/styles/ExtendsExerciseCheckbox.jsx';
+
+const EmptyDiv = styled.div`
+	display: none;
+`;
 
 export default class CustomForm extends VexModal {
 	constructor(message) {
@@ -13,12 +20,26 @@ export default class CustomForm extends VexModal {
 		this.formElements = '';
 		this.message = message;
 		this.isProjectRevisionSelector = false;
+		this.isExerciseSelector = false;
+
 		this.hasDateChooser = false;
 		this.disableYesButton = false;
 		this.showProjectDropDown = true;
+		this.showExerciseGroupDropDown = true;
 		this.projects = [];
+		this.termCourseID = [];
 		this.selectedRevisionID = '';
+		this.selectedExerciseID = '';
+		this.selectedExerciseGroupID = '';
+		this.ExtendsExercise = false;
+		this.ExtendsExerciseOrGroup = '';
 		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
+		this.setSelectedExerciseID = this.setSelectedExerciseID.bind(this);
+		this.setSelectedExerciseGroupID = this.setSelectedExerciseGroupID.bind(
+			this
+		);
+		this.setExtendsExerciseStatus = this.setExtendsExerciseStatus.bind(this);
+
 		this.setSelectedDate = this.setSelectedDate.bind(this);
 	}
 
@@ -26,8 +47,31 @@ export default class CustomForm extends VexModal {
 		this.selectedRevisionID = revisionID;
 	}
 
+	setSelectedExerciseID(exerciseID, projectRevisionID) {
+		this.ExtendsExerciseOrGroup = 'Exercise';
+		this.selectedExerciseID = exerciseID;
+		this.selectedRevisionID = projectRevisionID;
+	}
+	setSelectedExerciseGroupID(exerciseGroupID, projectRevisionID) {
+		this.ExtendsExerciseOrGroup = 'ExerciseGroup';
+		this.selectedExerciseGroupID = exerciseGroupID;
+		this.selectedRevisionID = projectRevisionID;
+	}
+
 	setSelectedDate(date) {
 		this.selectedDate = date;
+	}
+
+	setExtendsExerciseStatus(isChecked) {
+		this.ExtendsExercise = isChecked;
+		console.log(this.ExtendsExercise);
+		if (this.ExtendsExercise == true) {
+			this.hideElement('ProjectRevisionSelector');
+			this.renderExerciseGroupSelector();
+		} else {
+			this.renderProjectRevisionSelector();
+			this.hideElement('ExerciseGroupSelector');
+		}
 	}
 	addTextInput(name, label, placeholder, value) {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
@@ -99,6 +143,14 @@ export default class CustomForm extends VexModal {
 		}
 	}
 
+	addExerciseGroupDropDown(termCourseID) {
+		this.isExerciseSelector = true;
+		this.termCourseID = termCourseID;
+
+		this.formElements += '<div id="ExerciseGroupSelector">';
+		this.formElements += '</div>';
+	}
+
 	addSelect(name, options, label, initialValue) {
 		var _this = this;
 		this.formElements += '<div class="vex-custom-field-wrapper">';
@@ -163,6 +215,11 @@ export default class CustomForm extends VexModal {
 		this.formElements += '</div>';
 	}
 
+	addCheckBoxExtendsExercise(name, value, title) {
+		this.formElements += '<div id="ExtendsExerciseCheckbox">';
+		this.formElements += '</div>';
+	}
+
 	addCheckBoxes(name, itemList) {
 		var _this = this;
 		this.formElements += '<div class="vex-custom-field-wrapper">';
@@ -180,6 +237,34 @@ export default class CustomForm extends VexModal {
 		});
 		this.formElements += '</div>';
 		this.formElements += '</div>';
+	}
+	hideElement(elementID) {
+		ReactDOM.render(<EmptyDiv />, document.getElementById(elementID));
+	}
+
+	renderExerciseGroupSelector() {
+		ReactDOM.render(
+			<ThemeProvider theme={Theme}>
+				<ExerciseGroupSelector
+					setSelectedExerciseID={this.setSelectedExerciseID}
+					setSelectedExerciseGroupID={this.setSelectedExerciseGroupID}
+					termCourseID={this.termCourseID}
+				/>
+			</ThemeProvider>,
+			document.getElementById('ExerciseGroupSelector')
+		);
+	}
+
+	renderProjectRevisionSelector() {
+		ReactDOM.render(
+			<ThemeProvider theme={Theme}>
+				<ProjectRevisionSelector
+					setSelectedRevisionID={this.setSelectedRevisionID}
+					projects={this.projects}
+				/>
+			</ThemeProvider>,
+			document.getElementById('ProjectRevisionSelector')
+		);
 	}
 
 	showModal() {
@@ -209,6 +294,10 @@ export default class CustomForm extends VexModal {
 					if (data != false) {
 						data.SelectedRevisionID = _this.selectedRevisionID;
 						data.SelectedDate = _this.selectedDate;
+						data.ExtendsExercise = _this.ExtendsExercise;
+						data.SelectedExerciseID = _this.selectedExerciseID;
+						data.SelectedExerciseGroupID = _this.selectedExerciseGroupID;
+						data.ExtendsExerciseOrGroup = _this.ExtendsExerciseOrGroup;
 						resolve(data);
 					} else reject(data);
 				},
@@ -236,6 +325,16 @@ export default class CustomForm extends VexModal {
 						/>
 					</ThemeProvider>,
 					document.getElementById('ProjectRevisionSelector')
+				);
+			}
+			if (_this.isExerciseSelector && _this.showExerciseGroupDropDown) {
+				ReactDOM.render(
+					<ThemeProvider theme={Theme}>
+						<ExtendsExerciseCheckbox
+							setExtendsExerciseStatus={_this.setExtendsExerciseStatus}
+						/>
+					</ThemeProvider>,
+					document.getElementById('ExtendsExerciseCheckbox')
 				);
 			}
 		});

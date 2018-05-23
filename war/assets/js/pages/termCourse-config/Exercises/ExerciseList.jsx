@@ -93,7 +93,12 @@ export default class ExerciseList extends React.Component {
 				defaultMessage: 'Exercise Type'
 			})
 		);
-
+		modal.addCheckBoxExtendsExercise(
+			'ExtendsExercise',
+			false,
+			' Extends existing Exercise or Exercise Group'
+		);
+		modal.addExerciseGroupDropDown(this.props.termCourse.id);
 		modal.addDatePicker();
 
 		modal.addTextInput(
@@ -107,15 +112,70 @@ export default class ExerciseList extends React.Component {
 		);
 
 		modal.showModal().then(function(data) {
-			_this.createNewExercise(
-				data.name,
-				data.exerciseType,
-				data.SelectedRevisionID,
-				data.SelectedDate
-			);
+			if (data.ExtendsExercise) {
+				if (data.ExtendsExerciseOrGroup == 'Exercise') {
+					_this.createNewExerciseByExtendingExistingExercise(
+						data.SelectedExerciseID,
+						data.name,
+						data.exerciseType,
+						data.SelectedRevisionID,
+						data.SelectedDate);
+				}
+				else if (data.ExtendsExerciseOrGroup == 'ExerciseGroup') {
+					_this.createNewExerciseAndAddtoGroup(
+					data.SelectedExerciseGroupID,
+					data.name,
+					data.exerciseType,
+					data.SelectedRevisionID,
+					data.SelectedDate);
+				}
+			}
+			else {
+				_this.createNewExercise(
+					data.name,
+					data.exerciseType,
+					data.SelectedRevisionID,
+					data.SelectedDate
+				);
+			}
 		});
 	}
 
+	createNewExerciseByExtendingExistingExercise(existingExerciseID, name, exerciseType, projectRevisionID, exerciseDeadline) {
+		var _this = this;
+		var exercise = {};
+		var termCourseID = this.props.termCourse.id;
+		var exercises = this.state.exercises;
+		exercise.name = name;
+		exercise.exerciseType = exerciseType;
+		exercise.projectRevisionID = projectRevisionID;
+		exercise.termCourseID = termCourseID;
+		exercise.exerciseDeadline = exerciseDeadline;
+		ExerciseEndpoint.insertExerciseGroupForNewExercise(exercise, existingExerciseID, 'any name').then(function(resp) {
+			exercises.push(exercise);
+			_this.setState({
+				exercises: exercises
+			});
+		})
+	}
+
+	createNewExerciseAndAddtoGroup(exerciseGroupID, name, exerciseType, projectRevisionID, exerciseDeadline) {
+		var _this = this;
+		var exercise = {};
+		var termCourseID = this.props.termCourse.id;
+		var exercises = this.state.exercises;
+		exercise.name = name;
+		exercise.exerciseType = exerciseType;
+		exercise.projectRevisionID = projectRevisionID;
+		exercise.termCourseID = termCourseID;
+		exercise.exerciseDeadline = exerciseDeadline;
+		ExerciseEndpoint.createAndInsertExerciseToExerciseGroup(exercise, exerciseGroupID).then(function(resp) {
+			exercises.push(resp);
+			_this.setState({
+				exercises: exercises
+			});
+		})
+	}
 	createNewExercise(name, exerciseType, projectRevisionID, exerciseDeadline) {
 		var _this = this;
 		var exercise = {};

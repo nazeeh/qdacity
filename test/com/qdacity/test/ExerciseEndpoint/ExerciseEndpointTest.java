@@ -85,6 +85,63 @@ public class ExerciseEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
 	}
 
+    /**
+     * Tests if a registered user can create an exercise
+     * @throws UnauthorizedException
+     */
+    @Test
+    public void testCreateExerciseAndAddToExerciseGroup() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+        UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+        CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
+
+        ProjectEndpoint pe = new ProjectEndpoint();
+
+        CodeSystemTestHelper.addCodeSystem(2L, testUser);
+        ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
+        ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
+        ExerciseEndpointTestHelper.addExerciseGroup(1L, revision.getRevisionID(), 1L, "exercise Group 1", Arrays.asList("1"), 1L, testUser);
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+        ExerciseGroup exerciseGroup = ee.getExerciseGroupByID(1L, testUser);
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        assertEquals(1, ds.prepare(new Query("ExerciseGroup")).countEntities(withLimit(10)));
+        ExerciseEndpointTestHelper.createAndInsertExerciseToExerciseGroup(2L, 1L, "new exercise", nextYear, 1L, testUser);
+        assertEquals(2, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
+        exerciseGroup = ee.getExerciseGroupByID(1L, testUser);
+        assertEquals(2, exerciseGroup.getExercises().size());
+    }
+
+
+    /**
+     * Tests if a registered user can create an exercise
+     * @throws UnauthorizedException
+     */
+    @Test
+    public void insertExerciseGroupForNewExerciseTest() throws UnauthorizedException {
+
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+        UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+        CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        assertEquals(1, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+
+        Exercise newExercise = new Exercise();
+        newExercise.setName("Exercise 2");
+        newExercise.setTermCourseID(1L);
+        newExercise.setExerciseDeadline(nextYear);
+
+        ee.insertExerciseGroupForNewExercise(newExercise, 1L, "execise group", testUser);
+        assertEquals(2, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
+        assertEquals(1, ds.prepare(new Query("ExerciseGroup")).countEntities(withLimit(10)));
+
+    }
 
 
 	/**
@@ -129,6 +186,25 @@ public class ExerciseEndpointTest {
 
 		assertEquals(1, retrievedExercises.size());
 	}
+
+    /**
+     * Tests if a registered can list exercise groups of a term course
+     * @throws UnauthorizedException
+     */
+    @Test
+    public void testListTermCourseExerciseGroups() throws UnauthorizedException {
+
+        UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+        CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+        ExerciseEndpointTestHelper.insertExerciseGroup(1L, 1L, "New Exercise", testUser);
+
+        List<ExerciseGroup> retrievedExerciseGroups = null;
+
+        retrievedExerciseGroups = (List<ExerciseGroup>) ExerciseEndpointTestHelper.listTermCourseExerciseGroups(1L, testUser);
+
+        assertEquals(1, retrievedExerciseGroups.size());
+    }
 
 	/**
 	 * Tests if a registered user can get an exerciseProject by its revision id
