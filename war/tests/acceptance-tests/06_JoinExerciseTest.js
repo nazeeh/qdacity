@@ -45,6 +45,7 @@ describe(SPEC_NAME, function () {
 		this.driver.wait(until.elementLocated(Conditions.getCourse(courseName))).click();
 
 		this.driver.getCurrentUrl().then((currentUrl) => {
+			var _this = this;
 				// Does the URL end with /TermDashboard?
 				const urlContent = "/TermDashboard";
 				expect(currentUrl.includes(urlContent)).toBeTruthy();
@@ -62,7 +63,19 @@ describe(SPEC_NAME, function () {
 										expect(text).toBe("Document_01");
 										this.driver.wait(until.elementLocated(By.id('codingBracket')), 3000).then(() => {
 											throw new Error('Some codings were found, this exercise project should be stripped of codings!')
-										}, () => {done()});
+										}, () => {
+											//This selects the second half of the text because dragAndDrop starts from the center of the element..
+											//..and does not give the option to pass the coordinates
+											this.driver.actions().dragAndDrop(this.driver.findElement(By.xpath("//span[text()='This is the text.']")), {x: 50, y: 0}).perform();
+
+											//Apply code
+											this.driver.wait(until.elementLocated(By.id('applyCodeBtn'))).click();
+
+											this.driver.wait(until.elementLocated(By.id('codingBracket'))).getText().then((text) => {
+												expect(text).toBe("Code System");
+												done();
+									    	});
+										});
 									});
 						});
 					});
