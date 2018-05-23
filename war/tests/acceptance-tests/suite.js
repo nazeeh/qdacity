@@ -7,5 +7,4 @@ require('./coding-editor/ApplyCodeTest.js');
 require('./04_ProjectRevisionTest.js');
 require('./03_CourseTest.js');
 require('./05_ExerciseFromRevisionTest.js');
-require('./06_JoinTermCourseTest.js');
-require('./settings/DeleteUserTest.js');
+require('./06_JoinExerciseTest.js');
