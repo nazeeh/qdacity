@@ -311,7 +311,7 @@ export default class CustomForm extends VexModal {
 			if (_this.hasDateChooser) {
 				ReactDOM.render(
 					<ThemeProvider theme={Theme}>
-						<DateChooser setSelectedDate={_this.setSelectedDate} />
+						<DateChooser setSelectedDate={_this.setSelectedDate} dateDefault={new Date(new Date().setFullYear(new Date().getFullYear() + 1))} />
 					</ThemeProvider>,
 					document.getElementById('DateChooser')
 				);

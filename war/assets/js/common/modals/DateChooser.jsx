@@ -10,7 +10,7 @@ export default class DateChooser extends React.Component {
 	constructor(props) {
 		super(props);
 
-		const dateDefault = new Date();
+		const dateDefault = this.props.dateDefault;
 
 		this.props.setSelectedDate(DateChooser.toDateString(dateDefault));
 		this.state = {

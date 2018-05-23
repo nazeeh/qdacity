@@ -57,6 +57,8 @@ describe(SPEC_NAME, function () {
 			    	this.driver.wait(until.elementLocated(By.xpath("//div[@class='vex-custom-field-wrapper']/div[@class='vex-custom-input-wrapper']/input[@name='name' and @type='text']"))).sendKeys("Exercise_1");
 						this.driver.wait(until.elementLocated(By.id('projectRevisionDropDownBtn'))).click();
 						this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'customDropDownParent')]/ul/li[text()='0']"))).click();
+						// click the "OK" button
+			    	this.driver.findElement(By.xpath("//div[@class='vex-dialog-buttons']/button[@type='submit' and contains(@class,'vex-dialog-button') and text()='OK']")).click();
 
 				});
 
