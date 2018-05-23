@@ -43,6 +43,11 @@ export default class TermCourseList extends React.Component {
 			nextProps.course != null &&
 			nextProps.course.terms == undefined
 		) {
+			if(this.props.course != undefined && this.props.course != null && 
+				nextProps.course.id == this.props.course.id) {
+				// TODO: pull up initialization of term course data into parent component
+				return; // no need to rerender
+			}
 			// #workaround
 			// and the collect initial data in this component only once (terms set)
 			this.collectInitialData(nextProps.course);

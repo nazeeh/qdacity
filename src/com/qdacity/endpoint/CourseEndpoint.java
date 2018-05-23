@@ -27,6 +27,7 @@ import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
+import com.qdacity.exercise.Exercise;
 import com.qdacity.user.UserGroup;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
@@ -149,6 +150,12 @@ public class CourseEndpoint {
 
 			// Check if user is authorized
 			Authorization.checkAuthorizationCourse(course, user);
+
+			List<TermCourse> termCourses = listTermCourse(id, user);
+
+			for (TermCourse term : termCourses ) {
+				removeTermCourse(term.getId(), user);
+			}
 
 			List<String> userIDs = course.getOwners();
 
@@ -537,6 +544,14 @@ public class CourseEndpoint {
 
 			// Check if user is authorized
 			Authorization.checkAuthorizationTermCourse(termCourse, user);
+
+			ExerciseEndpoint ee = new ExerciseEndpoint();
+
+			List<Exercise> exercises = ee.listTermCourseExercises(id, user);
+
+			for (Exercise exercise : exercises ) {
+				ee.removeExercise(exercise.getId(),user);
+			}
 
 			List<String> userIDs = termCourse.getOwners();
 

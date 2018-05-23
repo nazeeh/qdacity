@@ -10,6 +10,14 @@ export default class UserGroupEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static updateName(groupId, name) {
+		var apiMethod = gapi.client.qdacity.usergroup.updateGroupName({
+			groupId: groupId,
+			name: name
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static listOwnedUserGroups(userId = null) {
 		var apiMethod = gapi.client.qdacity.usergroup.listOwnedUserGroups({
 			userId: userId
@@ -34,6 +42,29 @@ export default class UserGroupEndpoint {
 	static getUsers(groupId) {
 		var apiMethod = gapi.client.qdacity.usergroup.getUsers({
 			groupId: groupId
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static inviteParticipantByEmail(groupId, userEmail) {
+		var apiMethod = gapi.client.qdacity.usergroup.inviteParticipantByEmail({
+			groupId: groupId,
+			userEmail: userEmail
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static confirmParticipantInvitation(groupId) {
+		var apiMethod = gapi.client.qdacity.usergroup.acceptParticipantInvitation({
+			groupId: groupId
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static removeUser(groupId, userId) {
+		var apiMethod = gapi.client.qdacity.usergroup.removeUser({
+			groupId: groupId,
+			userId: userId
 		});
 		return Promisizer.makePromise(apiMethod);
 	}

@@ -14,7 +14,7 @@ class Logger {
       transports: [
         // Log to the console
         new winston.transports.Console({
-          level: 'debug',
+          level: 'info',
         }),
         // And log to Stackdriver Logging
         new LoggingWinston({

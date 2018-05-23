@@ -34,7 +34,7 @@ export default class ApiService {
 					_this.syncService.fireEvent('codeInserted', code);
 				});
 			case MSG.USER.UPDATE:
-				break;
+				return Promise.reject("Unhandled message type");
 			default:
 				const { formatMessage } = IntlProvider.intl;
 				const alertMessage = formatMessage({

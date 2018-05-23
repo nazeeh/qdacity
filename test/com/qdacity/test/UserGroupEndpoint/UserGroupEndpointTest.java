@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
@@ -81,6 +80,42 @@ public class UserGroupEndpointTest {
 
         String groupName = null;
         new UserGroupEndpoint().insertUserGroup(groupName, authUser);
+    }
+
+    @Test
+    public void testUpdateUserGroupName() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser);
+
+        String groupName = "groupName";
+        UserGroup userGroup = new UserGroupEndpoint().insertUserGroup("old", authUser);
+        userGroup = new UserGroupEndpoint().updateUserGroupName(userGroup.getId(), groupName, authUser);
+
+        assertEquals(groupName, userGroup.getName());
+    }
+
+    @Test
+    public void testUpdateUserGroupNameNotLoggedIn() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser);
+
+        String groupName = "groupName";
+        UserGroup userGroup = new UserGroupEndpoint().insertUserGroup("old", authUser);
+
+        thrown.expect(UnauthorizedException.class);
+        thrown.expectMessage("The user could not be authenticated");
+        userGroup = new UserGroupEndpoint().updateUserGroupName(userGroup.getId(), groupName, null);
+    }
+
+    @Test
+    public void testUpdateUserGroupNameNull() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser);
+
+        UserGroup userGroup = new UserGroupEndpoint().insertUserGroup("name", authUser);
+        thrown.expect(BadRequestException.class);
+        thrown.expectMessage("The name must not be null or empty!");
+        userGroup = new UserGroupEndpoint().updateUserGroupName(userGroup.getId(), null, authUser);
     }
 
     @Test
@@ -156,7 +191,32 @@ public class UserGroupEndpointTest {
         UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authGroupOwner);
         assertEquals(0, group1.getParticipants().size());
 
-        new UserGroupEndpoint().addParticipant(participant.getId(), group1.getId(), authGroupOwner);
+        new UserGroupEndpoint().inviteParticipant(participant.getId(), group1.getId(), authGroupOwner);
+        new UserGroupEndpoint().confirmParticipantInvitation(group1.getId(), authParticipant);
+
+        group1 = new UserGroupEndpoint().getUserGroupById(group1.getId(), authGroupOwner);
+        assertEquals(1, group1.getParticipants().size());
+        assertTrue(group1.getParticipants().contains(participant.getId()));
+
+        participant = new UserEndpoint().getCurrentUser(authParticipant);
+        assertEquals(1, participant.getUserGroups().size());
+        assertTrue(participant.getUserGroups().contains(group1.getId()));
+    }
+
+    @Test
+    public void testAddParticipantByEmail() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authGroupOwner = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User groupOwner = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authGroupOwner);
+
+        AuthenticatedUser authParticipant = new AuthenticatedUser("11", "test2@googleuser.de", LoginProviderType.GOOGLE);
+        User participant = UserEndpointTestHelper.addUser("test2@user.de", "test2", "participant", authParticipant);
+        assertEquals(0, participant.getUserGroups().size());
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authGroupOwner);
+        assertEquals(0, group1.getParticipants().size());
+
+        new UserGroupEndpoint().inviteParticipantByEmail(participant.getEmail(), group1.getId(), authGroupOwner);
+        new UserGroupEndpoint().confirmParticipantInvitation(group1.getId(), authParticipant);
 
         group1 = new UserGroupEndpoint().getUserGroupById(group1.getId(), authGroupOwner);
         assertEquals(1, group1.getParticipants().size());
@@ -180,7 +240,7 @@ public class UserGroupEndpointTest {
 
         thrown.expect(UnauthorizedException.class);
         thrown.expectMessage("Only group owners and admins are allowed to perform this operation!");
-        new UserGroupEndpoint().addParticipant(user2.getId(), group1.getId(), authUser2);
+        new UserGroupEndpoint().inviteParticipant(user2.getId(), group1.getId(), authUser2);
     }
 
     @Test
@@ -193,7 +253,22 @@ public class UserGroupEndpointTest {
 
         thrown.expect(UnauthorizedException.class);
         thrown.expectMessage("The user could not be authenticated");
-        new UserGroupEndpoint().addParticipant(user1.getId(), group1.getId(), null);
+        new UserGroupEndpoint().inviteParticipant(user1.getId(), group1.getId(), null);
+    }
+
+    @Test
+    public void testAddParticipantByEmailNotExists() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authGroupOwner = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User groupOwner = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authGroupOwner);
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authGroupOwner);
+        assertEquals(0, group1.getParticipants().size());
+
+        String testEmailNotExists = "not@exists.de";
+
+        thrown.expect(BadRequestException.class);
+        thrown.expectMessage("User with email " + testEmailNotExists + " not found!");
+        new UserGroupEndpoint().inviteParticipantByEmail(testEmailNotExists, group1.getId(), authGroupOwner);
     }
 
     @Test
@@ -202,7 +277,8 @@ public class UserGroupEndpointTest {
         User user1 = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser1);
 
         UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
-        new UserGroupEndpoint().addParticipant(user1.getId(), group1.getId(), authUser1);
+        new UserGroupEndpoint().inviteParticipant(user1.getId(), group1.getId(), authUser1);
+        new UserGroupEndpoint().confirmParticipantInvitation(group1.getId(), authUser1);
 
         thrown.expect(UnauthorizedException.class);
         thrown.expectMessage("The user could not be authenticated");
@@ -218,7 +294,8 @@ public class UserGroupEndpointTest {
         User user2 = UserEndpointTestHelper.addUser("test2@user.de", "test2", "user2", authUser2);
 
         UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
-        new UserGroupEndpoint().addParticipant(user2.getId(), group1.getId(), authUser1);
+        new UserGroupEndpoint().inviteParticipant(user2.getId(), group1.getId(), authUser1);
+        new UserGroupEndpoint().confirmParticipantInvitation(group1.getId(), authUser2);
 
         Collection<UserGroup> userGroupCollection = new UserGroupEndpoint().listUserGroups(null, null, authUser2).getItems();
         assertEquals(1, userGroupCollection.size());
@@ -237,7 +314,8 @@ public class UserGroupEndpointTest {
         User user2 = UserEndpointTestHelper.addUser("test2@user.de", "test2", "user2", authUser2);
 
         UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
-        new UserGroupEndpoint().addParticipant(user2.getId(), group1.getId(), authUser1);
+        new UserGroupEndpoint().inviteParticipant(user2.getId(), group1.getId(), authUser1);
+		new UserGroupEndpoint().confirmParticipantInvitation(group1.getId(), authUser2);
 
         Collection<UserGroup> userGroupCollection = new UserGroupEndpoint().listUserGroups(null, null, authUser2).getItems();
         assertEquals(1, userGroupCollection.size());
@@ -256,7 +334,8 @@ public class UserGroupEndpointTest {
         User user2 = UserEndpointTestHelper.addUser("test2@user.de", "test2", "user2", authUser2);
 
         UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
-        new UserGroupEndpoint().addParticipant(user2.getId(), group1.getId(), authUser1);
+        new UserGroupEndpoint().inviteParticipant(user2.getId(), group1.getId(), authUser1);
+		new UserGroupEndpoint().confirmParticipantInvitation(group1.getId(), authUser2);
 
         Collection<UserGroup> userGroupCollection = new UserGroupEndpoint().listUserGroups(null, null, authUser1).getItems();
         assertEquals(1, userGroupCollection.size());
@@ -276,7 +355,8 @@ public class UserGroupEndpointTest {
 
         UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
         UserGroup group2 = new UserGroupEndpoint().insertUserGroup("group2", authUser2);
-        new UserGroupEndpoint().addParticipant(user1.getId(), group2.getId(), authUser2);
+        new UserGroupEndpoint().inviteParticipant(user1.getId(), group2.getId(), authUser2);
+		new UserGroupEndpoint().confirmParticipantInvitation(group2.getId(), authUser1);
 
         Collection<UserGroup> userGroups = new UserGroupEndpoint().listUserGroups(null, user1.getId(), authUser2).getItems();
         assertEquals(2, userGroups.size());
@@ -294,7 +374,8 @@ public class UserGroupEndpointTest {
         User user2 = UserEndpointTestHelper.addUser("test2@user.de", "test2", "user2", authUser2);
 
         UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
-        new UserGroupEndpoint().addParticipant(user2.getId(), group1.getId(), authUser1);
+        new UserGroupEndpoint().inviteParticipant(user2.getId(), group1.getId(), authUser1);
+		new UserGroupEndpoint().confirmParticipantInvitation(group1.getId(), authUser2);
 
         Collection<User> users = new UserGroupEndpoint().getUsers(null, group1.getId(), authUser1).getItems();
         assertEquals(1, users.stream().filter(user -> user.getId().equals(user1.getId())).count());
@@ -307,7 +388,7 @@ public class UserGroupEndpointTest {
         User user1 = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser1);
 
         UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
-        new UserGroupEndpoint().addParticipant(user1.getId(), group1.getId(), authUser1);
+        new UserGroupEndpoint().inviteParticipant(user1.getId(), group1.getId(), authUser1);
 
         thrown.expect(UnauthorizedException.class);
         thrown.expectMessage("The user could not be authenticated");
