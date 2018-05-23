@@ -56,7 +56,8 @@ describe(SPEC_NAME, function () {
 						//Insert exercise parameters
 			    	this.driver.wait(until.elementLocated(By.xpath("//div[@class='vex-custom-field-wrapper']/div[@class='vex-custom-input-wrapper']/input[@name='name' and @type='text']"))).sendKeys("Exercise_1");
 						this.driver.wait(until.elementLocated(By.id('projectRevisionDropDownBtn'))).click();
-						//this.driver.wait(until.elementLocated(By.xpath("//div[@class='customDropDownParent']/li"))).click();
+						this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'customDropDownParent')]/ul/li[text()='0']"))).click();
+
 				});
 
 		});
