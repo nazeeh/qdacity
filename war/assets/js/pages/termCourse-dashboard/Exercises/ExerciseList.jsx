@@ -82,7 +82,7 @@ export default class ExerciseList extends React.Component {
 					)}{' '}
 				</span>
 				<div>
-					<StyledListItemBtn
+					<StyledListItemBtn id="joinExerciseBtn"
 						onClick={e => this.editorClick(e, exercise, index)}
 						className=" btn fa-lg"
 						color={Theme.darkGreen}

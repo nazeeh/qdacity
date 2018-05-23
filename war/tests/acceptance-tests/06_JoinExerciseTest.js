@@ -9,7 +9,7 @@ var Common = require('./helper/Common.js');
 var Conditions = require('./helper/Conditions.js');
 
 
-const SPEC_NAME = 'Join Term Course test';
+const SPEC_NAME = 'Join exercise test';
 
 describe(SPEC_NAME, function () {
 
@@ -36,7 +36,7 @@ describe(SPEC_NAME, function () {
         this.driver.quit().then(done);
     }, Common.getDefaultTimeout());
 
-    it('Should join an existing term course', (done) => {
+    it('Should join an existing exercise', (done) => {
     	const courseName = 'Course_01';
     	const _this = this;
 
@@ -52,7 +52,14 @@ describe(SPEC_NAME, function () {
 	    	this.driver.findElement(By.xpath("//div[@class='vex-dialog-buttons']/button[@type='submit' and contains(@class,'vex-dialog-button') and text()='OK']")).click();
 				this.driver.wait(until.elementLocated(By.xpath("//div[@id='exerciseList']/div/ul/li/span"))).getText().then((text) => {
 						expect(text).toBe("Exercise_1");
-						done();
+						this.driver.wait(until.elementLocated(By.id('joinExerciseBtn'))).click();
+						this.driver.sleep(3000);
+						this.driver.getCurrentUrl().then((currentUrl) => {
+								// Does the URL end with /CodingEditor?
+								const urlContent = "/CodingEditor";
+								expect(currentUrl.includes(urlContent)).toBeTruthy();
+								done();
+						});
 					});
 		});
 
