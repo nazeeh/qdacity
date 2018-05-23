@@ -283,7 +283,7 @@ export default class ExerciseList extends React.Component {
 		if (!this.props.auth.authentication.isSignedIn()) return null;
 
 		return (
-			<div>
+			<div id="exerciseList">
 				{this.renderNewExerciseButton()}
 
 				<ItemList

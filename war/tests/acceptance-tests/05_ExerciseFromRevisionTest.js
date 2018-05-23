@@ -60,6 +60,11 @@ describe(SPEC_NAME, function () {
 						// click the "OK" button
 			    	this.driver.findElement(By.xpath("//div[@class='vex-dialog-buttons']/button[@type='submit' and contains(@class,'vex-dialog-button') and text()='OK']")).click();
 
+						// Find the exercise
+					this.driver.wait(until.elementLocated(By.xpath("//div[@id='exerciseList']/div/ul/li/span"))).getText().then((text) => {
+							expect(text).toBe("Exercise_1");
+							done();
+						});
 				});
 
 		});
