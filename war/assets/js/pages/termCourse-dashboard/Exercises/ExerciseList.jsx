@@ -207,13 +207,15 @@ export default class ExerciseList extends React.Component {
 		if (!this.props.auth.authentication.isSignedIn()) return null;
 
 		return (
-			<ItemList
+			<div id="exerciseList">
+			<ItemList id="exerciseList"
 				key={'itemlist'}
 				hasPagination={true}
 				itemsPerPage={8}
 				items={this.state.exercises}
 				renderItem={this.renderExercise}
 			/>
+		</div>
 		);
 	}
 }

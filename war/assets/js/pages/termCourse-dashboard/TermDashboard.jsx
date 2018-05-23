@@ -170,7 +170,7 @@ export default class TermDashboard extends React.Component {
 		//Show join/leave button depending on whether the user is a participant in the course
 		if (!termCourse.isUserParticipant) {
 			return (
-				<StyledListItemBtn
+				<StyledListItemBtn id="joinTermCourseBtn"
 					onClick={e => this.addParticipant(e)}
 					className=" btn fa-lg"
 					color={Theme.darkGreen}

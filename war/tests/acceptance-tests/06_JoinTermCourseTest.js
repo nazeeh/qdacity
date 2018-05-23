@@ -44,5 +44,17 @@ describe(SPEC_NAME, function () {
 		Conditions.assertCourseExists(this.driver, courseName);
 		this.driver.wait(until.elementLocated(Conditions.getCourse(courseName))).click();
 
+		this.driver.getCurrentUrl().then((currentUrl) => {
+				// Does the URL end with /TermDashboard?
+				const urlContent = "/TermDashboard";
+				expect(currentUrl.includes(urlContent)).toBeTruthy();
+				this.driver.wait(until.elementLocated(By.id('joinTermCourseBtn'))).click();
+	    	this.driver.findElement(By.xpath("//div[@class='vex-dialog-buttons']/button[@type='submit' and contains(@class,'vex-dialog-button') and text()='OK']")).click();
+				this.driver.wait(until.elementLocated(By.xpath("//div[@id='exerciseList']/div/ul/li/span"))).getText().then((text) => {
+						expect(text).toBe("Exercise_1");
+						done();
+					});
+		});
+
     }, Common.getDefaultTimeout());
 });
