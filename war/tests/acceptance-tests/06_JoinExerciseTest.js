@@ -60,7 +60,9 @@ describe(SPEC_NAME, function () {
 								expect(currentUrl.includes(urlContent)).toBeTruthy();
 								this.driver.wait(until.elementLocated(By.xpath("//div[@id='documentList']/div/a/div"))).getText().then((text) => {
 										expect(text).toBe("Document_01");
-										done();
+										this.driver.wait(until.elementLocated(By.id('codingBracket')), 3000).then(() => {
+											throw new Error('Some codings were found, this exercise project should be stripped of codings!')
+										}, () => {done()});
 									});
 						});
 					});
