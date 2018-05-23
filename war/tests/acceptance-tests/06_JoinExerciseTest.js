@@ -58,7 +58,10 @@ describe(SPEC_NAME, function () {
 								// Does the URL end with /CodingEditor?
 								const urlContent = "/CodingEditor";
 								expect(currentUrl.includes(urlContent)).toBeTruthy();
-								done();
+								this.driver.wait(until.elementLocated(By.xpath("//div[@id='documentList']/div/a/div"))).getText().then((text) => {
+										expect(text).toBe("Document_01");
+										done();
+									});
 						});
 					});
 		});
