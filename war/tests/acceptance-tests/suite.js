@@ -8,3 +8,4 @@ require('./04_ProjectRevisionTest.js');
 require('./03_CourseTest.js');
 require('./05_ExerciseFromRevisionTest.js');
 require('./06_JoinExerciseTest.js');
+require('./settings/DeleteUserTest.js');
